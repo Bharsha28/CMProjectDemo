@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
-import { accounts, cards, payments, statements } from "../../data/mockData";
 import { customerApi } from "../../services/api";
 
 function CustomerCardsPage() {
-  const [cardRows, setCardRows] = useState(cards);
-  const [account, setAccount] = useState(accounts[0] || null);
-  const [statementRows, setStatementRows] = useState(statements);
-  const [paymentRows, setPaymentRows] = useState(payments);
+  const [cardRows, setCardRows] = useState([]);
+  const [account, setAccount] = useState(null);
+  const [statementRows, setStatementRows] = useState([]);
+  const [paymentRows, setPaymentRows] = useState([]);
 
   useEffect(() => {
     async function loadCustomerCardData() {
@@ -21,15 +20,15 @@ function CustomerCardsPage() {
           customerApi.getMyPayments()
         ]);
 
-        setCardRows(Array.isArray(myCards) ? myCards : cards);
-        setAccount(myAccount || accounts[0] || null);
-        setStatementRows(Array.isArray(myStatements) ? myStatements : statements);
-        setPaymentRows(Array.isArray(myPayments) ? myPayments : payments);
+        setCardRows(Array.isArray(myCards) ? myCards : []);
+        setAccount(myAccount || null);
+        setStatementRows(Array.isArray(myStatements) ? myStatements : []);
+        setPaymentRows(Array.isArray(myPayments) ? myPayments : []);
       } catch (error) {
-        setCardRows(cards);
-        setAccount(accounts[0] || null);
-        setStatementRows(statements);
-        setPaymentRows(payments);
+        setCardRows([]);
+        setAccount(null);
+        setStatementRows([]);
+        setPaymentRows([]);
       }
     }
 

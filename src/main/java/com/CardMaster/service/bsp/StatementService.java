@@ -86,9 +86,14 @@ public class StatementService {
     }
 
     @Transactional(readOnly = true)
-    public List<Statement> listByEmail(String email) {
+    public List<Statement> listByEmail(String email, LocalDate fromDate, LocalDate toDate) {
         return accountRepository.findByCardCustomerContactInfoEmail(email)
-                .map(account -> statementRepository.findByAccount_AccountIdOrderByGeneratedDateDesc(account.getAccountId()))
+                .map(account -> {
+                    if (fromDate != null && toDate != null) {
+                        return statementRepository.findByAccount_AccountIdAndGeneratedDateBetweenOrderByGeneratedDateDesc(account.getAccountId(), fromDate, toDate);
+                    }
+                    return statementRepository.findByAccount_AccountIdOrderByGeneratedDateDesc(account.getAccountId());
+                })
                 .orElse(List.of());
     }
 }

@@ -10,6 +10,9 @@ import java.util.Optional;
 public interface StatementRepository extends JpaRepository<Statement, Long> {
     List<Statement> findByAccount_AccountIdOrderByGeneratedDateDesc(Long accountId);
 
+    List<Statement> findByAccount_AccountIdAndGeneratedDateBetweenOrderByGeneratedDateDesc(
+            Long accountId, java.time.LocalDate fromDate, java.time.LocalDate toDate);
+
     Optional<Statement> findFirstByAccount_AccountIdAndStatusOrderByGeneratedDateDesc(
             Long accountId,
             StatementStatus status

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
-import { transactions } from "../../data/mockData";
 import { customerApi } from "../../services/api";
 
 function CustomerTransactionsPage() {

@@ -64,8 +64,11 @@ public class StatementController {
 
     @GetMapping("/my")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<List<StatementDto>> listMy(Principal principal) {
-        List<Statement> list = service.listByEmail(principal.getName());
+    public ResponseEntity<List<StatementDto>> listMy(
+            Principal principal,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate fromDate,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE) java.time.LocalDate toDate) {
+        List<Statement> list = service.listByEmail(principal.getName(), fromDate, toDate);
         return ResponseEntity.ok(list.stream().map(mapper::toDTO).toList());
     }
 }

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
-import { statements } from "../../data/mockData";
 import { customerApi } from "../../services/api";
 
 function CustomerStatementsPage() {
@@ -10,19 +9,22 @@ function CustomerStatementsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    async function loadStatements() {
-      setLoading(true);
-      try {
-        const response = await customerApi.getMyStatements();
-        setRows(Array.isArray(response) ? response : []);
-      } catch (err) {
-        setError("Failed to load your statements from the server.");
-      } finally {
-        setLoading(false);
-      }
-    }
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
+  async function loadStatements() {
+    setLoading(true);
+    try {
+      const response = await customerApi.getMyStatements(fromDate, toDate);
+      setRows(Array.isArray(response) ? response : []);
+    } catch (err) {
+      setError("Failed to load your statements from the server.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
     loadStatements();
   }, []);
 
@@ -34,6 +36,23 @@ function CustomerStatementsPage() {
       />
 
       <div className="card border-0 shadow-sm overflow-hidden">
+        <div className="card-header bg-white border-bottom py-3">
+          <div className="row g-2 align-items-center">
+            <div className="col-auto">
+              <label className="form-label mb-0 small text-muted">From Date</label>
+              <input type="date" className="form-control form-control-sm" value={fromDate} onChange={e => setFromDate(e.target.value)} />
+            </div>
+            <div className="col-auto">
+              <label className="form-label mb-0 small text-muted">To Date</label>
+              <input type="date" className="form-control form-control-sm" value={toDate} onChange={e => setToDate(e.target.value)} />
+            </div>
+            <div className="col-auto align-self-end">
+              <button className="btn btn-sm btn-primary" onClick={loadStatements}>
+                Filter
+              </button>
+            </div>
+          </div>
+        </div>
         <div className="card-body p-0">
           <DataTable
             columns={[

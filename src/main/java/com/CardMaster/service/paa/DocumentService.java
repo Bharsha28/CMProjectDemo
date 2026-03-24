@@ -33,7 +33,11 @@ public class DocumentService {
 
         String filename = fileStorageService.save(file);
 
-        Document doc = new Document();
+        Document doc = repo.findByApplicationApplicationId(applicationId).stream()
+                .filter(d -> d.getDocumentType() == Document.DocumentType.valueOf(documentType))
+                .findFirst()
+                .orElse(new Document());
+
         doc.setApplication(app);
         doc.setDocumentType(Document.DocumentType.valueOf(documentType));
         doc.setFileURI(filename);

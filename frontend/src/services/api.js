@@ -1,18 +1,3 @@
-import {
-  accounts,
-  applications,
-  auditLogs,
-  cardProducts,
-  cards,
-  creditScores,
-  customerProfiles,
-  feeConfigs,
-  payments,
-  statements,
-  transactions,
-  underwritingHistory,
-  users
-} from "../data/mockData";
 import { clearSession, getStoredSession, getToken } from "../utils/auth";
 
 const API_BASE_URL = "http://localhost:8082";
@@ -22,38 +7,11 @@ function getSessionEmail() {
   return getStoredSession()?.email || "";
 }
 
-function getMockCustomerProfile() {
-  const session = getStoredSession();
-  const email = session?.email || customerProfiles[0]?.email || "";
-  const existingCustomer = customerProfiles.find(
-    (item) => (item.email || item.contactInfo?.email) === email
-  );
-
-  if (existingCustomer) {
-    return existingCustomer;
-  }
-
-  return {
-    customerId: 9001,
-    name: session?.name || "Demo Customer",
-    dob: "1995-01-01",
-    contactInfo: {
-      address: "Demo Address",
-      email,
-      phone: "9876543210"
-    },
-    income: 500000,
-    employmentType: "Salaried",
-    status: "Active"
-  };
-}
-
-function unwrapResponse(payload, fallback) {
+function unwrapResponse(payload) {
   if (payload?.data) {
     return payload.data;
   }
-
-  return payload ?? fallback;
+  return payload;
 }
 
 function decodeJwtPayload(token) {
@@ -95,25 +53,18 @@ async function fetchJson(path, options = {}) {
   return response.json();
 }
 
-async function safeFetch(path, fallback, options = {}) {
-  try {
-    return await fetchJson(path, options);
-  } catch (error) {
-    return fallback;
-  }
-}
+
 
 export const customerApi = {
-  getCustomers: async () => unwrapResponse(await safeFetch("/api/customers", { data: customerProfiles }), customerProfiles),
+  getCustomers: async () => unwrapResponse(await fetchJson("/api/customers")),
   createCustomer: (payload) =>
     fetchJson("/api/customers", { method: "POST", body: JSON.stringify(payload) }),
   getMyCustomer: async () =>
-    unwrapResponse(await safeFetch("/api/customers/my", { data: customerProfiles[0] }), customerProfiles[0]),
-  getApplications: async () => unwrapResponse(await safeFetch("/api/applications", { data: applications }), applications),
+    unwrapResponse(await fetchJson("/api/customers/my")),
+  getApplications: async () => unwrapResponse(await fetchJson("/api/applications")),
   getApplicationsByCustomer: async (customerId) =>
     unwrapResponse(
-      await safeFetch(`/api/applications/customer/${customerId}`, { data: applications.filter((item) => item.customerId === customerId) }),
-      applications.filter((item) => item.customerId === customerId)
+      await fetchJson(`/api/applications/customer/${customerId}`)
     ),
   createApplication: async (payload) =>
     fetchJson("/api/applications", { method: "POST", body: JSON.stringify(payload) }),
@@ -138,50 +89,41 @@ export const customerApi = {
     }
     return response.json();
   },
-  getProducts: async () => unwrapResponse(await safeFetch("/api/products", cardProducts), cardProducts),
+  getProducts: async () => unwrapResponse(await fetchJson("/api/products")),
   getProductsStrict: async () =>
-    unwrapResponse(await fetchJson("/api/products"), []),
+    unwrapResponse(await fetchJson("/api/products")),
   getMyCards: async () =>
     unwrapResponse(
-      await safeFetch("/api/cards/my", cards.filter((item) => item.customerEmail === getSessionEmail())),
-      cards.filter((item) => item.customerEmail === getSessionEmail())
+      await fetchJson("/api/cards/my")
     ),
   getMyAccount: async () =>
     unwrapResponse(
-      await safeFetch("/api/accounts/my", accounts.find((item) => item.customerEmail === getSessionEmail()) || accounts[0]),
-      accounts.find((item) => item.customerEmail === getSessionEmail()) || accounts[0]
+      await fetchJson("/api/accounts/my")
     ),
   getMyTransactions: async () => {
-    const account = accounts.find((item) => item.customerEmail === getSessionEmail());
-    const fallbackRows = account
-      ? transactions.filter((item) => item.accountId === account.accountId)
-      : [];
-    return unwrapResponse(await safeFetch("/api/transactions/my", fallbackRows), fallbackRows);
+    return unwrapResponse(await fetchJson("/api/transactions/my"));
   },
   updateMyCustomer: (payload) =>
     fetchJson("/api/customers/my", { method: "PUT", body: JSON.stringify(payload) }),
-  getMyStatements: async () => {
-    const account = accounts.find((item) => item.customerEmail === getSessionEmail());
-    const fallbackRows = account
-      ? statements.filter((item) => item.accountId === account.accountId)
-      : [];
-    return unwrapResponse(await safeFetch("/api/billing/statements/my", fallbackRows), fallbackRows);
+  getMyStatements: async (fromDate, toDate) => {
+    let url = "/api/billing/statements/my";
+    const params = new URLSearchParams();
+    if (fromDate) params.append("fromDate", fromDate);
+    if (toDate) params.append("toDate", toDate);
+    if (params.toString()) url += `?${params.toString()}`;
+    return unwrapResponse(await fetchJson(url));
   },
   getMyPayments: async () => {
-    const account = accounts.find((item) => item.customerEmail === getSessionEmail());
-    const fallbackRows = account
-      ? payments.filter((item) => item.accountId === account.accountId)
-      : [];
-    return unwrapResponse(await safeFetch("/api/billing/payments/my", fallbackRows), fallbackRows);
+    return unwrapResponse(await fetchJson("/api/billing/payments/my"));
   },
   capturePayment: (payload) =>
     fetchJson("/api/billing/payments/capture", { method: "POST", body: JSON.stringify(payload) })
 };
 
 export const underwriterApi = {
-  getApplications: async () => unwrapResponse(await safeFetch("/api/applications", { data: applications }), applications),
-  getCreditScores: () => Promise.resolve(creditScores),
-  getUnderwritingHistory: () => Promise.resolve(underwritingHistory),
+  getApplications: async () => unwrapResponse(await fetchJson("/api/applications")),
+  getCreditScores: () => fetchJson("/api/scores"),
+  getUnderwritingHistory: () => fetchJson("/api/decisions"),
   createDecision: (applicationId, payload) =>
     fetchJson(`/api/applications/${applicationId}/decisions`, {
       method: "POST",
@@ -190,13 +132,13 @@ export const underwriterApi = {
 };
 
 export const operationsApi = {
-  getCards: () => safeFetch("/api/cards/my", cards),
+  getCards: () => fetchJson("/api/cards/my"),
   createCard: (payload) =>
     fetchJson("/api/cards", { method: "POST", body: JSON.stringify(payload) }),
-  getAccounts: () => safeFetch("/api/accounts/my", accounts),
+  getAccounts: () => fetchJson("/api/accounts/my"),
   createAccount: (payload) =>
     fetchJson("/api/accounts", { method: "POST", body: JSON.stringify(payload) }),
-  getTransactions: () => safeFetch("/api/transactions", transactions),
+  getTransactions: () => fetchJson("/api/transactions"),
   authorizeTransaction: (payload) =>
     fetchJson("/api/transactions/authorize", {
       method: "POST",
@@ -210,7 +152,7 @@ export const operationsApi = {
     fetchJson(`/api/transactions/reverse/${transactionId}`, {
       method: "POST"
     }),
-  getStatements: () => safeFetch("/api/billing/statements", statements),
+  getStatements: () => fetchJson("/api/billing/statements"),
   createStatement: (payload) =>
     fetchJson("/api/billing/statements/generate", {
       method: "POST",
@@ -220,7 +162,7 @@ export const operationsApi = {
     fetchJson(`/api/billing/statements/close/${statementId}`, {
       method: "POST"
     }),
-  getPayments: () => safeFetch("/api/billing/payments", payments),
+  getPayments: () => fetchJson("/api/billing/payments"),
   createPayment: (payload) =>
     fetchJson("/api/billing/payments/capture", {
       method: "POST",
@@ -229,16 +171,16 @@ export const operationsApi = {
 };
 
 export const adminApi = {
-  getUsers: async () => unwrapResponse(await safeFetch("/api/users", { data: users }), users),
+  getUsers: async () => unwrapResponse(await fetchJson("/api/users")),
   registerUser: (payload) =>
     fetchJson("/api/users/register", { method: "POST", body: JSON.stringify(payload) }),
-  getProducts: () => safeFetch("/api/products", cardProducts),
+  getProducts: () => fetchJson("/api/products"),
   createProduct: (payload) =>
     fetchJson("/api/products", { method: "POST", body: JSON.stringify(payload) }),
-  getFees: () => Promise.resolve(feeConfigs),
+  getFees: () => fetchJson("/api/fees"),
   createFee: (payload) =>
     fetchJson("/api/fees", { method: "POST", body: JSON.stringify(payload) }),
-  getAuditLogs: async () => unwrapResponse(await safeFetch("/api/auditlogs", { data: auditLogs }), auditLogs)
+  getAuditLogs: async () => unwrapResponse(await fetchJson("/api/auditlogs"))
 };
 
 export const authApi = {
