@@ -192,17 +192,17 @@ function RegisterPage() {
                     {passwordError && <div className="invalid-feedback w-100">{passwordError}</div>}
                   </div>
                 </div>
-                <div className="col-12 d-flex justify-content-end mt-4">
+                <div className="auth-status-container">
+                  {message ? <div className="alert alert-success mt-4 mb-0">{message}</div> : null}
+                  {error ? <div className="alert alert-danger mt-4 mb-0">{error}</div> : null}
+                </div>
+
+                <div className="col-12 d-flex justify-content-end">
                   <button className="btn btn-primary auth-submit-btn-minimized" disabled={loading}>
                     {loading ? "Registering..." : "Create"}
                   </button>
                 </div>
               </form>
-
-              <div className="auth-status-container">
-                {message ? <div className="alert alert-success mt-4 mb-0">{message}</div> : null}
-                {error ? <div className="alert alert-danger mt-4 mb-0">{error}</div> : null}
-              </div>
 
               <p className="mt-4 mb-0 text-muted">
                 Already have an account? <Link to="/login">Go to login</Link>.
