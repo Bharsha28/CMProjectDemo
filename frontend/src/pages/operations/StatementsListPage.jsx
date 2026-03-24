@@ -92,13 +92,13 @@ function StatementsListPage() {
 
       <div className="card border-0 shadow-sm mb-4">
         <div className="card-body p-4">
-          <form onSubmit={handleGenerate} className="row g-3">
-            <div className="col-md-4">
+          <form onSubmit={handleGenerate} className="row g-4">
+            <div className="col-md-6">
               <label className="form-label">Account</label>
               <select className="form-select" name="accountId" value={formData.accountId} onChange={handleChange}>
                 {accountList.map((account) => (
                   <option key={account.accountId} value={account.accountId}>
-                    {account.customerEmail} - {account.accountId}
+                    {account.customerEmail} - Account ID: {account.accountId}
                   </option>
                 ))}
               </select>
@@ -111,9 +111,9 @@ function StatementsListPage() {
               <label className="form-label">Period End</label>
               <input type="date" className="form-control" name="periodEnd" value={formData.periodEnd} onChange={handleChange} required />
             </div>
-            <div className="col-md-2 d-flex align-items-end">
-              <button className="btn btn-primary w-100" disabled={loading}>
-                {loading ? "Saving..." : "Generate"}
+            <div className="col-12 text-end pt-2">
+              <button className="btn btn-primary px-5" disabled={loading}>
+                {loading ? "Generating..." : "Generate Statement"}
               </button>
             </div>
           </form>
@@ -130,8 +130,8 @@ function StatementsListPage() {
               { key: "accountId", label: "Account ID" },
               { key: "customerName", label: "Customer" },
               { key: "customerEmail", label: "Customer Email" },
-              { key: "totalDue", label: "Total Due" },
-              { key: "minimumDue", label: "Minimum Due" },
+              { key: "totalDue", label: "Total Due", render: (row) => `$${Number(row.totalDue || 0).toLocaleString()}` },
+              { key: "minimumDue", label: "Min Due", render: (row) => `$${Number(row.minimumDue || 0).toLocaleString()}` },
               { key: "generatedDate", label: "Generated Date" },
               { key: "status", label: "Status", type: "status" },
               {

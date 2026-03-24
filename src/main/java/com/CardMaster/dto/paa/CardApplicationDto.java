@@ -21,6 +21,10 @@ public class CardApplicationDto {
 
     @NotNull
     private Long productId;    // Reference to CardProduct entity
+    
+    private String customerName;
+    private String customerEmail;
+    private String productName;
 
     private Double requestedLimit;
 

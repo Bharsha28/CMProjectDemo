@@ -20,6 +20,10 @@ public class AuditLogService {
     public List<AuditLog> getAllLogs() {
         return auditLogRepository.findAll();
     }
+
+    public List<AuditLog> getRecentLogs() {
+        return auditLogRepository.findTop5ByOrderByTimestampDesc();
+    }
     /**
      * Log an action by resolving the User entity from either userId or email.
      */

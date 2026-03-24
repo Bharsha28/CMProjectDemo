@@ -62,6 +62,7 @@ export const customerApi = {
   getMyCustomer: async () =>
     unwrapResponse(await fetchJson("/api/customers/my")),
   getApplications: async () => unwrapResponse(await fetchJson("/api/applications")),
+  getMyApplications: async () => unwrapResponse(await fetchJson("/api/applications/my")),
   getApplicationsByCustomer: async (customerId) =>
     unwrapResponse(
       await fetchJson(`/api/applications/customer/${customerId}`)
@@ -122,8 +123,13 @@ export const customerApi = {
 
 export const underwriterApi = {
   getApplications: async () => unwrapResponse(await fetchJson("/api/applications")),
-  getCreditScores: () => fetchJson("/api/scores"),
-  getUnderwritingHistory: () => fetchJson("/api/decisions"),
+  getCreditScores: async () => unwrapResponse(await fetchJson("/api/scores")),
+  createCreditScore: (payload) =>
+    fetchJson(`/api/applications/${payload.applicationId}/scores`, {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }),
+  getUnderwritingHistory: () => unwrapResponse(fetchJson("/api/decisions")),
   createDecision: (applicationId, payload) =>
     fetchJson(`/api/applications/${applicationId}/decisions`, {
       method: "POST",
@@ -132,10 +138,10 @@ export const underwriterApi = {
 };
 
 export const operationsApi = {
-  getCards: () => fetchJson("/api/cards/my"),
+  getCards: () => fetchJson("/api/cards"),
   createCard: (payload) =>
     fetchJson("/api/cards", { method: "POST", body: JSON.stringify(payload) }),
-  getAccounts: () => fetchJson("/api/accounts/my"),
+  getAccounts: () => fetchJson("/api/accounts"),
   createAccount: (payload) =>
     fetchJson("/api/accounts", { method: "POST", body: JSON.stringify(payload) }),
   getTransactions: () => fetchJson("/api/transactions"),
@@ -180,7 +186,8 @@ export const adminApi = {
   getFees: () => fetchJson("/api/fees"),
   createFee: (payload) =>
     fetchJson("/api/fees", { method: "POST", body: JSON.stringify(payload) }),
-  getAuditLogs: async () => unwrapResponse(await fetchJson("/api/auditlogs"))
+  getAuditLogs: async () => unwrapResponse(await fetchJson("/api/auditlogs")),
+  getRecentTransactions: async () => unwrapResponse(await fetchJson("/api/transactions/recent"))
 };
 
 export const authApi = {

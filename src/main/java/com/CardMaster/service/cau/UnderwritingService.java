@@ -30,6 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +45,21 @@ public class UnderwritingService {
     private final JwtUtil jwtUtil;
     private final UnderwritingMapper mapper;
 
+    @Transactional(readOnly = true)
+    public List<CreditScoreResponse> getRecentScores() {
+        return creditScoreRepository.findTop5ByOrderByGeneratedDateDesc()
+                .stream()
+                .map(mapper::toCreditScoreResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<UnderwritingDecisionResponse> getRecentDecisions() {
+        return decisionRepository.findTop5ByOrderByDecisionDateDesc()
+                .stream()
+                .map(mapper::toUnderwritingDecisionResponse)
+                .collect(Collectors.toList());
+    }
 
     public CreditScoreResponse generateScore(Long appId, CreditScoreGenerateRequest req) {
         CardApplication app = applicationRepository.findById(appId)
@@ -158,7 +175,7 @@ public class UnderwritingService {
         switch (finalDecision) {
             case APPROVE     -> app.setStatus(CardApplication.CardApplicationStatus.Approved);
             case REJECT      -> app.setStatus(CardApplication.CardApplicationStatus.Rejected);
-            case CONDITIONAL -> app.setStatus(CardApplication.CardApplicationStatus.UnderReview);
+            case CONDITIONAL -> app.setStatus(CardApplication.CardApplicationStatus.Conditional);
         }
         applicationRepository.save(app);
 

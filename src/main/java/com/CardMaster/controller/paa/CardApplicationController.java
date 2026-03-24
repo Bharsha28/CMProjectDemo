@@ -36,10 +36,20 @@ public class CardApplicationController {
                 .body(new ResponseStructure<>("Application created successfully", saved));
     }
 
+    @GetMapping("/my")
+    public ResponseEntity<ResponseStructure<List<CardApplicationDto>>> getMyApplications(
+            java.security.Principal principal,
+            @RequestHeader("Authorization") String token) {
+
+        log.info("Fetching applications for current user: {}", principal.getName());
+        List<CardApplicationDto> apps = applicationService.getApplicationsForUserEmail(principal.getName());
+        return ResponseEntity.ok(new ResponseStructure<>("Your applications retrieved successfully", apps));
+    }
+
     // --- Get Application by ID ---
     @GetMapping("/{id}")
     public ResponseEntity<ResponseStructure<CardApplicationDto>> getById(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestHeader("Authorization") String token) {
 
         log.info("Fetching application {}", id);
@@ -60,7 +70,7 @@ public class CardApplicationController {
     // --- Get Applications by Customer ---
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<ResponseStructure<List<CardApplicationDto>>> getByCustomer(
-            @PathVariable Long customerId,
+            @PathVariable("customerId") Long customerId,
             @RequestHeader("Authorization") String token) {
 
         log.info("Fetching applications for customer {}", customerId);
@@ -76,7 +86,7 @@ public class CardApplicationController {
 
     @GetMapping("/{id}/status")
     public ResponseEntity<ResponseStructure<Object>> getStatus(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestHeader("Authorization") String token) {
 
         log.info("Fetching status for application {}", id);
@@ -95,8 +105,8 @@ public class CardApplicationController {
     // --- Update Application Status ---
     @PutMapping("/{id}/status")
     public ResponseEntity<ResponseStructure<CardApplicationDto>> updateStatus(
-            @PathVariable Long id,
-            @RequestParam String status,
+            @PathVariable("id") Long id,
+            @RequestParam("status") String status,
             @RequestHeader("Authorization") String token) {
 
         log.info("Updating status for application {} to {}", id, status);

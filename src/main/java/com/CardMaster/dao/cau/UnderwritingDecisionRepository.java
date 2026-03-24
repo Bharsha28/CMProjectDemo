@@ -9,4 +9,6 @@ public interface UnderwritingDecisionRepository extends JpaRepository<Underwriti
 
     Optional<UnderwritingDecision>
     findTopByApplication_ApplicationIdOrderByDecisionDateDesc(Long applicationId);
+
+    java.util.List<UnderwritingDecision> findTop5ByOrderByDecisionDateDesc();
 }

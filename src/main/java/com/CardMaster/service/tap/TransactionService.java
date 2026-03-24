@@ -157,6 +157,11 @@ public class TransactionService {
     public List<Transaction> listByEmail(String email) {
         return transactionRepo.findByAccount_Card_Customer_ContactInfo_Email(email);
     }
+
+    @Transactional(readOnly = true)
+    public List<Transaction> getRecentTransactions() {
+        return transactionRepo.findTop5ByOrderByTransactionDateDesc();
+    }
 }
 
 

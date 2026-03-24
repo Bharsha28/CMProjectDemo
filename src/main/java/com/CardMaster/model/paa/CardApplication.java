@@ -49,6 +49,6 @@ public class CardApplication {
     private List<UnderwritingDecision> decisions;
 
     public enum CardApplicationStatus {
-        Submitted, UnderReview, Approved, Rejected
+        Submitted, UnderReview, Approved, Rejected, Conditional
     }
 }

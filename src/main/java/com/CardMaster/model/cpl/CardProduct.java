@@ -40,6 +40,10 @@ public class CardProduct {
     @Column(nullable = false)
     private Double annualFee;
 
+    @Positive
+    @Column(nullable = false)
+    private Double maxCreditLimit;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 16)
     private ProductStatus status;

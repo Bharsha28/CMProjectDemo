@@ -15,6 +15,9 @@ public class CardAccountResponseDto {
     private Long accountId;
     private Long cardId;
     private Long applicationId;
+    private String customerName;
+    private String customerEmail;
+    private String maskedCardNumber;
     private Double creditLimit;
     private Double availableLimit;
     private LocalDate openDate;

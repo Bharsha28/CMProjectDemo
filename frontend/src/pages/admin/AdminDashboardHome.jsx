@@ -5,18 +5,19 @@ import DataTable from "../../components/DataTable";
 import { useState, useEffect } from "react";
 import { adminApi, customerApi, operationsApi } from "../../services/api";
 function AdminDashboardHome() {
-  const [data, setData] = useState({ users: [], applications: [], statements: [], payments: [] });
+  const [data, setData] = useState({ users: [], applications: [], statements: [], payments: [], transactions: [] });
 
   useEffect(() => {
     async function fetchDashboard() {
       try {
-        const [u, a, s, p] = await Promise.all([
+        const [u, a, s, p, t] = await Promise.all([
           adminApi.getUsers().catch(() => []),
           customerApi.getApplications().catch(() => []),
           operationsApi.getStatements().catch(() => []),
-          operationsApi.getPayments().catch(() => [])
+          operationsApi.getPayments().catch(() => []),
+          adminApi.getRecentTransactions().catch(() => [])
         ]);
-        setData({ users: u, applications: a, statements: s, payments: p });
+        setData({ users: u, applications: a, statements: s, payments: p, transactions: t });
       } catch (e) { console.error(e); }
     }
     fetchDashboard();
@@ -31,10 +32,9 @@ function AdminDashboardHome() {
 
   return (
     <Layout section="admin" title="Admin Dashboard">
-      <PageHeader
-        title="Admin Dashboard Home"
-        subtitle="Manage users, products, fee setup and view system-wide information."
-      />
+      <div className="mb-4">
+        <p className="text-muted">Manage users, products, fee setup and view system-wide information.</p>
+      </div>
 
       <div className="row g-3 mb-4">
         {stats.map((item) => (
@@ -60,6 +60,21 @@ function AdminDashboardHome() {
               { key: "status", label: "Status", type: "status" }
             ]}
             rows={data.applications}
+          />
+        </div>
+      </div>
+      <div className="card border-0 shadow-sm mt-4">
+        <div className="card-body">
+          <h5 className="mb-3">Recent Transactions (Last 5)</h5>
+          <DataTable
+            columns={[
+              { key: "merchant", label: "Merchant" },
+              { key: "amount", label: "Amount" },
+              { key: "currency", label: "Currency" },
+              { key: "transactionDate", label: "Date" },
+              { key: "status", label: "Status", type: "status" }
+            ]}
+            rows={data.transactions}
           />
         </div>
       </div>

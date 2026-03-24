@@ -31,10 +31,9 @@ function OperationsDashboardHome() {
 
   return (
     <Layout section="operations" title="Operations Dashboard">
-      <PageHeader
-        title="Operations Dashboard Page"
-        subtitle="Track issuance, accounts, statements, payments and transaction operations."
-      />
+      <div className="mb-4">
+        <p className="text-muted">Track issuance, accounts, statements, payments and transaction operations.</p>
+      </div>
 
       <div className="row g-3 mb-4">
         {stats.map((item) => (
@@ -48,21 +47,22 @@ function OperationsDashboardHome() {
         ))}
       </div>
 
-      <div className="card border-0 shadow-sm">
-        <div className="card-body">
-          <h5 className="mb-3">Latest Card Activity</h5>
-          <DataTable
-            columns={[
-              { key: "customerName", label: "Customer" },
-              { key: "customerEmail", label: "Customer Email" },
-              { key: "productName", label: "Product" },
-              { key: "maskedCardNumber", label: "Card Number" },
-              { key: "status", label: "Status", type: "status" }
-            ]}
-            rows={data.cards}
-          />
+        <div className="col-12">
+          <div className="card border-0 shadow-sm">
+            <div className="card-body">
+              <h5 className="mb-3">Latest Card Activity</h5>
+              <DataTable
+                columns={[
+                  { key: "customerName", label: "Customer" },
+                  { key: "productName", label: "Product" },
+                  { key: "maskedCardNumber", label: "Card Number" },
+                  { key: "status", label: "Status", type: "status" }
+                ]}
+                rows={data.cards}
+              />
+            </div>
+          </div>
         </div>
-      </div>
     </Layout>
   );
 }

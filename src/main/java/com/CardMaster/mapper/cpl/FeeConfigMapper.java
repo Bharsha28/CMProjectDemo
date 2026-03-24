@@ -27,6 +27,7 @@ public class FeeConfigMapper {
         return FeeConfigResponseDto.builder()
                 .feeId(e.getFeeId())
                 .productId(e.getProduct().getProductId())
+                .productName(e.getProduct().getName())
                 .feeType(e.getFeeType())
                 .amount(e.getAmount())
                 .build();

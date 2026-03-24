@@ -27,6 +27,7 @@ public class UnderwritingMapper {
         CreditScoreResponse d = new CreditScoreResponse();
         d.setScoreId(e.getScoreId());
         d.setApplicationId(e.getApplication().getApplicationId());
+        d.setCustomerName(e.getApplication().getCustomer().getName());
         d.setBureauScore(e.getBureauScore());
         d.setInternalScore(e.getInternalScore());
         d.setGeneratedDate(e.getGeneratedDate().toString());
@@ -38,6 +39,7 @@ public class UnderwritingMapper {
         d.setDecisionId(e.getDecisionId());
         d.setApplicationId(e.getApplication().getApplicationId());
         d.setUnderwriterId(e.getUnderwriter().getUserId());
+        d.setCustomerName(e.getApplication().getCustomer().getName());
         d.setDecision(e.getDecision());
         d.setApprovedLimit(e.getApprovedLimit());
         d.setRemarks(e.getRemarks());

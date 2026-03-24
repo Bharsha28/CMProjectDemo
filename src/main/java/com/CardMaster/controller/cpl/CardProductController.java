@@ -60,7 +60,7 @@ public class CardProductController {
 
     // get a single product by Id
     @GetMapping("/{id}")
-    public ResponseEntity<CardProductResponseDto> getById(@PathVariable Long id) {
+    public ResponseEntity<CardProductResponseDto> getById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 }

@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface CreditScoreRepository extends JpaRepository<CreditScore, Long> {
     Optional<CreditScore> findTopByApplication_ApplicationIdOrderByGeneratedDateDesc(Long applicationId);
+    java.util.List<CreditScore> findTop5ByOrderByGeneratedDateDesc();
 }

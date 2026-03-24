@@ -7,15 +7,15 @@ const navSections = {
     { label: "Dashboard Home", to: "/customer", icon: "bi-house-door" },
     { label: "New Request", to: "/customer/wizard", icon: "bi-plus-circle" },
     { label: "My Cards", to: "/customer/cards", icon: "bi-credit-card" },
-    { label: "Settlements", to: "/customer/statements", icon: "bi-file-earmark-text" },
+    { label: "Statements", to: "/customer/statements", icon: "bi-file-earmark-text" },
     { label: "Transactions", to: "/customer/transactions", icon: "bi-arrow-left-right" },
     { label: "Payments", to: "/customer/payments", icon: "bi-wallet2" }
   ],
   underwriter: [
     { label: "Dashboard Home", to: "/underwriter" },
-    { label: "Applications", to: "/underwriter/applications" },
-    { label: "Credit Scores", to: "/underwriter/credit-scores" },
-    { label: "Decision Page", to: "/underwriter/decisions" }
+    { label: "Application List", to: "/underwriter/applications" },
+    { label: "Credit Score", to: "/underwriter/credit-scores" },
+    { label: "Underwriting Decision", to: "/underwriter/decisions" }
   ],
   operations: [
     { label: "Dashboard Home", to: "/operations" },
@@ -79,10 +79,7 @@ function Layout({ section, title, children }) {
       </aside>
 
       <main className="content-panel">
-        <div className="hero-banner mb-4 d-flex justify-content-between align-items-center">
-          <div>
-            <h1 className="h3 mb-0">{title}</h1>
-          </div>
+        <div className="hero-banner mb-4 d-flex justify-content-end align-items-center">
           {session && (
             <div className="d-flex align-items-center gap-3">
               <div className="text-end d-none d-md-block">
@@ -108,7 +105,9 @@ function Layout({ section, title, children }) {
             </div>
           )}
         </div>
-        {children}
+        <div className="container-fluid px-0">
+          {children}
+        </div>
       </main>
     </div>
   );

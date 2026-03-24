@@ -98,6 +98,21 @@ CardApplicationService {
         return dtos;
     }
 
+    private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger(CardApplicationService.class);
+
+    public List<CardApplicationDto> getApplicationsForUserEmail(String email) {
+        log.info("Fetching applications for user email via Native SQL: {}", email);
+        
+        List<CardApplication> apps = applicationRepository.findByEmailNative(email);
+        log.info("Found {} applications for email: {}", apps.size(), email);
+        
+        List<CardApplicationDto> dtos = new ArrayList<>();
+        for (CardApplication app : apps) {
+            dtos.add(EntityMapper.toCardApplicationDto(app));
+        }
+        return dtos;
+    }
+
 
     public CardApplicationDto updateApplicationStatus(Long appId, String status, String token) {
         jwtUtil.extractUsername(token.substring(7)); // validate token

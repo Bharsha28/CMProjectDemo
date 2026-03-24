@@ -72,4 +72,8 @@ public class CardIssuanceService {
     public List<Card> getCardsByEmail(String email) {
         return cardRepository.findByCustomerContactInfoEmail(email);
     }
+
+    public List<Card> getAllCards() {
+        return cardRepository.findAll();
+    }
 }

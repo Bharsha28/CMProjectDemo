@@ -6,8 +6,8 @@ import { useEffect } from "react";
 import { adminApi } from "../../services/api";
 
 const initialForm = {
-  productId: "1",
-  feeType: "Late",
+  productId: "",
+  feeType: "ISSUANCE",
   amount: ""
 };
 
@@ -26,6 +26,10 @@ function FeeConfigPage() {
         ]);
         setProducts(loadedProducts);
         setRows(loadedFees);
+        // Sync productId to the first real product's actual DB id
+        if (loadedProducts.length > 0) {
+          setFormData(f => ({ ...f, productId: String(loadedProducts[0].productId) }));
+        }
       } catch (e) {
         console.error("Failed to fetch fee data");
       } finally {
@@ -49,10 +53,13 @@ function FeeConfigPage() {
           amount: Number(formData.amount)
       };
       const response = await adminApi.createFee(payload);
-      setRows((curr) => [response, ...curr]);
-      setFormData(initialForm);
+      // Refresh the fee list from backend after saving
+      const refreshed = await adminApi.getFees();
+      setRows(refreshed);
+      setFormData(f => ({ ...initialForm, productId: formData.productId, feeType: formData.feeType }));
     } catch (e) {
-      console.error(e);
+      console.error("Save failed:", e);
+      alert("Failed to save fee: " + (e.message || "Unknown error"));
     }
   }
 
@@ -64,11 +71,11 @@ function FeeConfigPage() {
       />
 
       <div className="row g-4">
-        <div className="col-lg-5">
+        <div className="col-12">
           <div className="card border-0 shadow-sm">
             <div className="card-body p-4">
               <form onSubmit={handleSubmit} className="row g-3">
-                <div className="col-12">
+                <div className="col-md-6">
                   <label className="form-label">Card Product</label>
                   <select className="form-select" name="productId" value={formData.productId} onChange={handleChange}>
                     {products.map((product) => (
@@ -78,7 +85,7 @@ function FeeConfigPage() {
                     ))}
                   </select>
                 </div>
-                <div className="col-12">
+                <div className="col-md-6">
                   <label className="form-label">Fee Type</label>
                   <select className="form-select" name="feeType" value={formData.feeType} onChange={handleChange}>
                     <option>ISSUANCE</option>
@@ -92,17 +99,18 @@ function FeeConfigPage() {
                   <label className="form-label">Amount</label>
                   <input type="number" className="form-control" name="amount" value={formData.amount} onChange={handleChange} required />
                 </div>
-                <div className="col-12">
-                  <button className="btn btn-primary">Save Fee</button>
+                <div className="col-12 d-flex justify-content-end">
+                  <button className="btn btn-primary px-4">Save</button>
                 </div>
               </form>
             </div>
           </div>
         </div>
 
-        <div className="col-lg-7">
+        <div className="col-12">
           <div className="card border-0 shadow-sm">
             <div className="card-body">
+              <h5 className="mb-3">Retrieved Fee Configurations</h5>
               <DataTable
                 columns={[
                   { key: "productName", label: "Product" },

@@ -41,6 +41,9 @@ public class EntityMapper {
         dto.setApplicationId(app.getApplicationId());
         dto.setCustomerId(app.getCustomer().getCustomerId());
         dto.setProductId(app.getProduct().getProductId());
+        dto.setCustomerName(app.getCustomer().getName());
+        dto.setCustomerEmail(app.getCustomer().getContactInfo().getEmail());
+        dto.setProductName(app.getProduct().getName());
         dto.setRequestedLimit(app.getRequestedLimit());
         dto.setApplicationDate(app.getApplicationDate());
         dto.setStatus(app.getStatus().name());

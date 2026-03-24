@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class CreditScoreResponse {
     private Long scoreId;
     private Long applicationId;
+    private String customerName;
     private Integer bureauScore;
     private Integer internalScore;
     private String generatedDate;

@@ -114,39 +114,39 @@ function TransactionsListPage() {
 
       <div className="card border-0 shadow-sm mb-4">
         <div className="card-body p-4">
-          <form onSubmit={handleAuthorize} className="row g-3">
-            <div className="col-md-3">
+          <form onSubmit={handleAuthorize} className="row g-4">
+            <div className="col-md-6">
               <label className="form-label">Account</label>
               <select className="form-select" name="accountId" value={formData.accountId} onChange={handleChange}>
                 {accountList.map((account) => (
                   <option key={account.accountId} value={account.accountId}>
-                    {account.customerEmail} - {account.accountId}
+                    {account.customerEmail} - Account ID: {account.accountId}
                   </option>
                 ))}
               </select>
             </div>
-            <div className="col-md-2">
-              <label className="form-label">Amount</label>
-              <input type="number" className="form-control" name="amount" value={formData.amount} onChange={handleChange} required />
+            <div className="col-md-6">
+              <label className="form-label">Merchant Name</label>
+              <input className="form-control" name="merchant" value={formData.merchant} onChange={handleChange} required placeholder="e.g. Amazon, Starbucks" />
             </div>
-            <div className="col-md-2">
+            <div className="col-md-4">
+              <label className="form-label">Amount ($)</label>
+              <input type="number" className="form-control" name="amount" value={formData.amount} onChange={handleChange} required placeholder="0.00" />
+            </div>
+            <div className="col-md-4">
               <label className="form-label">Currency</label>
               <input className="form-control" name="currency" value={formData.currency} onChange={handleChange} required />
             </div>
-            <div className="col-md-3">
-              <label className="form-label">Merchant</label>
-              <input className="form-control" name="merchant" value={formData.merchant} onChange={handleChange} required />
-            </div>
-            <div className="col-md-2">
+            <div className="col-md-4">
               <label className="form-label">Channel</label>
               <select className="form-select" name="channel" value={formData.channel} onChange={handleChange}>
-                <option>ONLINE</option>
-                <option>POS</option>
-                <option>ATM</option>
+                <option value="ONLINE">Online</option>
+                <option value="POS">POS (In-Store)</option>
+                <option value="ATM">ATM</option>
               </select>
             </div>
-            <div className="col-12">
-              <button className="btn btn-primary" disabled={loading}>
+            <div className="col-12 text-end pt-2">
+              <button className="btn btn-primary px-5" disabled={loading}>
                 {loading ? "Saving..." : "Authorize Transaction"}
               </button>
             </div>
@@ -163,7 +163,7 @@ function TransactionsListPage() {
               { key: "transactionId", label: "Transaction ID" },
               { key: "accountId", label: "Account ID" },
               { key: "merchant", label: "Merchant" },
-              { key: "amount", label: "Amount" },
+              { key: "amount", label: "Amount", render: (row) => `$${Number(row.amount || 0).toLocaleString()}` },
               { key: "channel", label: "Channel" },
               { key: "transactionDate", label: "Date" },
               { key: "status", label: "Status", type: "status" },

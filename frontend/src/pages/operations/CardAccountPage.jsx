@@ -74,53 +74,47 @@ function CardAccountPage() {
   return (
     <Layout section="operations" title="Operations Dashboard">
       <PageHeader
-        title="Card Account Page"
+        title="Card Account"
         subtitle="Create a card account and track limit usage for issued cards."
       />
 
-      <div className="row g-4">
-        <div className="col-lg-5">
-          <div className="card border-0 shadow-sm">
-            <div className="card-body p-4">
-              <form onSubmit={handleSubmit} className="row g-3">
-                <div className="col-12">
-                  <label className="form-label">Issued Card</label>
-                  <select className="form-select" name="cardId" value={formData.cardId} onChange={handleChange} required>
-                    {cardList.map((card) => (
-                      <option key={card.cardId} value={card.cardId}>
-                        {card.customerEmail} - {card.maskedCardNumber}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="col-12">
-                  <button className="btn btn-primary" disabled={loading}>
-                    {loading ? "Saving..." : "Create Card Account"}
-                  </button>
-                </div>
-              </form>
-              {message ? <div className="alert alert-success mt-4 mb-0">{message}</div> : null}
-              {error ? <div className="alert alert-danger mt-4 mb-0">{error}</div> : null}
+      <div className="card border-0 shadow-sm mb-4">
+        <div className="card-body p-4">
+          <form onSubmit={handleSubmit} className="row g-3">
+            <div className="col-12">
+              <label className="form-label">Issued Card</label>
+              <select className="form-select" name="cardId" value={formData.cardId} onChange={handleChange} required>
+                <option value="">Select Issued Card</option>
+                {cardList.filter(c => c.status === 'ISSUED').map((card) => (
+                  <option key={card.cardId} value={card.cardId}>
+                    {card.customerName} - {card.maskedCardNumber} (ID: {card.cardId})
+                  </option>
+                ))}
+              </select>
             </div>
-          </div>
+            <div className="col-12 d-flex justify-content-end mt-3">
+              <button className="btn btn-primary px-4" disabled={loading}>
+                {loading ? "Saving..." : "Create Card Account"}
+              </button>
+            </div>
+          </form>
+          {message ? <div className="alert alert-success mt-4 mb-0">{message}</div> : null}
+          {error ? <div className="alert alert-danger mt-4 mb-0">{error}</div> : null}
         </div>
+      </div>
 
-        <div className="col-lg-7">
-          <div className="card border-0 shadow-sm">
-            <div className="card-body">
-              <DataTable
-                columns={[
-                  { key: "customerName", label: "Customer" },
-                  { key: "customerEmail", label: "Customer Email" },
-                  { key: "openDate", label: "Open Date" },
-                  { key: "creditLimit", label: "Credit Limit" },
-                  { key: "availableLimit", label: "Available Limit" },
-                  { key: "status", label: "Status", type: "status" }
-                ]}
-                rows={rows}
-              />
-            </div>
-          </div>
+      <div className="card border-0 shadow-sm">
+        <div className="card-body p-0">
+          <DataTable
+            columns={[
+              { key: "customerName", label: "Customer" },
+              { key: "openDate", label: "Open Date" },
+              { key: "creditLimit", label: "Credit Limit" },
+              { key: "availableLimit", label: "Available Limit" },
+              { key: "status", label: "Status", type: "status" }
+            ]}
+            rows={rows}
+          />
         </div>
       </div>
     </Layout>

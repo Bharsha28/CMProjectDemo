@@ -36,12 +36,10 @@ function CustomerTransactionsPage() {
         <div className="card-body p-0">
           <DataTable
             columns={[
-              { key: "transactionId", label: "Transaction ID" },
               { key: "merchant", label: "Merchant" },
-              { key: "amount", label: "Amount", render: (val) => `$${Number(val).toLocaleString()}` },
-              { key: "currency", label: "Currency" },
-              { key: "channel", label: "Channel" },
+              { key: "amount", label: "Amount", render: (row) => `${row.currency} ${Number(row.amount || 0).toLocaleString()}` },
               { key: "transactionDate", label: "Date" },
+              { key: "channel", label: "Channel" },
               { key: "status", label: "Status", type: "status" }
             ]}
             rows={rows}

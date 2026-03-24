@@ -13,7 +13,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/billing/statements")
+@RequestMapping("/api/billing/statements")
 @RequiredArgsConstructor
 public class StatementController {
 
@@ -37,7 +37,7 @@ public class StatementController {
      */
     @PostMapping("/close/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','OFFICER')")
-    public ResponseEntity<StatementDto> close(@PathVariable Long id) {
+    public ResponseEntity<StatementDto> close(@PathVariable("id") Long id) {
         Statement closed = service.closeStatement(id);
         return ResponseEntity.ok(mapper.toDTO(closed));
     }
@@ -47,7 +47,7 @@ public class StatementController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN','OFFICER')")
-    public ResponseEntity<StatementDto> get(@PathVariable Long id) {
+    public ResponseEntity<StatementDto> get(@PathVariable("id") Long id) {
         Statement st = service.getById(id);
         return ResponseEntity.ok(mapper.toDTO(st));
     }

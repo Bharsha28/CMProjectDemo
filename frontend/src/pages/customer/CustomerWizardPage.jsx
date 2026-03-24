@@ -29,8 +29,7 @@ function CustomerWizardPage() {
   const [appForm, setAppForm] = useState(initialAppForm);
   const [customer, setCustomer] = useState(null);
   const [products, setProducts] = useState([]);
-  const [transactions, setTransactions] = useState([]);
-  const [statements, setStatements] = useState([]);
+  const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [message, setMessage] = useState("");
@@ -45,11 +44,10 @@ function CustomerWizardPage() {
     async function loadInitialData() {
       setPageLoading(true);
       try {
-        const [myCustomer, productResponse, trxs, stmts] = await Promise.all([
+        const [myCustomer, productResponse, myApps] = await Promise.all([
           customerApi.getMyCustomer().catch(() => null),
           customerApi.getProductsStrict().catch(() => []),
-          customerApi.getMyTransactions().catch(() => []),
-          customerApi.getMyStatements().catch(() => [])
+          customerApi.getMyApplications().catch(() => [])
         ]);
 
         if (myCustomer?.customerId) {
@@ -65,17 +63,37 @@ function CustomerWizardPage() {
             status: myCustomer.status || "Active"
           });
           setStep(2);
+
+          // Fallback: If myApps is empty, retry with customerId
+          if (!myApps || myApps.length === 0) {
+            try {
+              const appsById = await customerApi.getApplicationsByCustomer(myCustomer.customerId);
+              if (appsById && appsById.length > 0) {
+                setApplications(appsById);
+              } else {
+                setApplications([]);
+              }
+            } catch (err) {
+              setApplications([]);
+            }
+          } else {
+            setApplications(myApps);
+          }
+        } else {
+          setApplications(myApps || []);
         }
 
         setProducts(productResponse || []);
-        setTransactions(trxs || []);
-        setStatements(stmts || []);
 
         if (productResponse?.length > 0) {
           setAppForm(curr => ({ ...curr, productId: String(productResponse[0].productId) }));
         }
       } catch (err) {
-        // Fallback handled
+        if (err.message?.includes("400") || err.message?.includes("reflection")) {
+          setError("Backend synchronization error: Please RESTART your Spring Boot application to apply latest fixes.");
+        } else {
+          setError("Failed to synchronize with backend. Please check your connection.");
+        }
       } finally {
         setPageLoading(false);
       }
@@ -95,6 +113,22 @@ function CustomerWizardPage() {
 
   function handleFileChange(e) {
     const file = e.target.files[0];
+    if (!file) return;
+    
+    // Size check: 10MB = 10 * 1024 * 1024 bytes
+    if (file.size > 10 * 1024 * 1024) {
+      setError("File size exceeds 10MB limit.");
+      e.target.value = ""; // clear input
+      return;
+    }
+    // Type check (already restricted by accept but double check)
+    if (file.type !== "application/pdf") {
+      setError("Only PDF files are allowed.");
+      e.target.value = "";
+      return;
+    }
+    
+    setError("");
     setAppForm(curr => ({ ...curr, file }));
   }
 
@@ -140,10 +174,25 @@ function CustomerWizardPage() {
     setError("");
     setMessage("");
 
+    const selectedProduct = products.find(p => String(p.productId) === String(appForm.productId));
+    const requested = Number(appForm.requestedLimit);
+    
+    if (requested > 100000) {
+      setError("Requested Limit should not be greater than $100,000");
+      setLoading(false);
+      return;
+    }
+
+    if (selectedProduct && requested > selectedProduct.maxCreditLimit) {
+      setError(`Requested Limit should not be greater than card limit ($${selectedProduct.maxCreditLimit.toLocaleString()})`);
+      setLoading(false);
+      return;
+    }
+
     const payload = {
       customerId: customer?.customerId,
       productId: Number(appForm.productId),
-      requestedLimit: Number(appForm.requestedLimit),
+      requestedLimit: requested,
       applicationDate: new Date().toISOString().slice(0, 10),
       status: "Submitted"
     };
@@ -170,6 +219,7 @@ function CustomerWizardPage() {
 
       setMessage("Card application submitted! We are reviewing your request based on your verified profile.");
       setAppForm(initialAppForm);
+      customerApi.getMyApplications().then(setApplications).catch(() => {});
     } catch (err) {
       setError(err.message || "Application submission failed.");
     } finally {
@@ -272,14 +322,14 @@ function CustomerWizardPage() {
                       </select>
                     </div>
                     <div className="col-md-6">
-                      <label className="form-label">File attachment</label>
-                      <input type="file" className="form-control" name="file" onChange={handleFileChange} required />
+                      <label className="form-label">File attachment (PDF only, max 10MB)</label>
+                      <input type="file" className="form-control" name="file" accept=".pdf" onChange={handleFileChange} required />
                     </div>
-                    <div className="col-12 mt-3">
-                      <button className="btn btn-success" disabled={loading}>
-                        {loading ? "Submitting..." : "Submit Card Request"}
+                    <div className="col-12 mt-3 d-flex justify-content-end align-items-center gap-2">
+                      <button type="button" className="btn btn-link link-secondary me-auto" onClick={() => setStep(1)} disabled={loading}>Edit Profile</button>
+                      <button className="btn btn-success px-4" disabled={loading}>
+                        {loading ? "Submitting..." : "Submit"}
                       </button>
-                      <button type="button" className="btn btn-link link-secondary" onClick={() => setStep(1)} disabled={loading}>Edit Profile</button>
                     </div>
                   </>
                 )}
@@ -292,22 +342,18 @@ function CustomerWizardPage() {
           {customer?.customerId && (
             <div className="card border-0 shadow-sm overflow-hidden">
               <div className="card-header bg-white border-0 py-3">
-                <h6 className="mb-0 fw-bold">Recent Financial Activity</h6>
+                <h6 className="mb-0 fw-bold">My Application Status</h6>
               </div>
               <div className="card-body p-0">
-                <div className="nav nav-tabs nav-fill bg-light border-0">
-                  <button className="nav-link active border-0 py-2 small fw-bold">Transactions ({transactions.length})</button>
-                  <button className="nav-link border-0 py-2 small">Statements ({statements.length})</button>
-                </div>
                 <DataTable
                   columns={[
-                    { key: "merchant", label: "Merchant" },
-                    { key: "amount", label: "Amount" },
-                    { key: "transactionDate", label: "Date" },
+                    { key: "applicationId", label: "Application Id" },
+                    { key: "productName", label: "Product" },
+                    { key: "requestedLimit", label: "Limit" },
                     { key: "status", label: "Status", type: "status" }
                   ]}
-                  rows={transactions.slice(0, 5)}
-                  emptyMessage="No financial history found."
+                  rows={applications.slice(0, 5)}
+                  emptyMessage="No applications found."
                 />
               </div>
             </div>
@@ -338,7 +384,7 @@ function CustomerWizardPage() {
           {customer?.customerId && (
             <div className="card border-0 shadow-sm">
               <div className="card-body p-4">
-                <h6 className="fw-bold mb-3 text-primary">Reflected Backend Data</h6>
+                <h6 className="fw-bold mb-3 text-primary">Customer Details</h6>
                 <div className="small">
                   <div className="d-flex justify-content-between mb-2">
                     <span className="text-muted">CID:</span>

@@ -9,6 +9,7 @@ import lombok.Data;
 public class FeeConfigResponseDto {
     private Long feeId;
     private Long productId;
+    private String productName;
     private FeeType feeType;
     private Double amount;
 }

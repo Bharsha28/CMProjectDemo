@@ -16,6 +16,8 @@ public class CardResponseDto {
         private Long applicationId;
         private Long customerId;
         private Long productId;
+        private String customerName;
+        private String customerEmail;
         private String maskedCardNumber;
         private LocalDate expiryDate;
         private String status; // ISSUED, ACTIVE, BLOCKED

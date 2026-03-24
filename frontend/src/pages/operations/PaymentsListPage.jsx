@@ -84,40 +84,40 @@ function PaymentsListPage() {
 
       <div className="card border-0 shadow-sm mb-4">
         <div className="card-body p-4">
-          <form onSubmit={handleSubmit} className="row g-3">
-            <div className="col-md-3">
-              <label className="form-label">Account</label>
+          <form onSubmit={handleSubmit} className="row g-4">
+            <div className="col-md-6">
+              <label className="form-label">Target Account</label>
               <select className="form-select" name="accountId" value={formData.accountId} onChange={handleChange}>
                 {accountList.map((account) => (
                   <option key={account.accountId} value={account.accountId}>
-                    {account.customerEmail} - {account.accountId}
+                    {account.customerEmail} - Account ID: {account.accountId}
                   </option>
                 ))}
               </select>
             </div>
-            <div className="col-md-3">
-              <label className="form-label">Open Statement</label>
+            <div className="col-md-6">
+              <label className="form-label">Billing Statement</label>
               <select className="form-select" name="statementId" value={formData.statementId} onChange={handleChange}>
                 <option value="">Auto-pick latest open statement</option>
                 {statementList
                   .filter((statement) => statement.status === "OPEN")
                   .map((statement) => (
                     <option key={statement.statementId} value={statement.statementId}>
-                      {statement.statementId} - Account {statement.accountId}
+                      Stmt ID {statement.statementId} - Account {statement.accountId}
                     </option>
                   ))}
               </select>
             </div>
-            <div className="col-md-2">
-              <label className="form-label">Amount</label>
-              <input type="number" className="form-control" name="amount" value={formData.amount} onChange={handleChange} required />
+            <div className="col-md-6">
+              <label className="form-label">Payment Amount ($)</label>
+              <input type="number" className="form-control" name="amount" value={formData.amount} onChange={handleChange} required placeholder="Enter amount" />
             </div>
-            <div className="col-md-2">
-              <label className="form-label">Date</label>
+            <div className="col-md-6">
+              <label className="form-label">Payment Date</label>
               <input type="date" className="form-control" name="paymentDate" value={formData.paymentDate} onChange={handleChange} />
             </div>
-            <div className="col-md-2">
-              <label className="form-label">Method</label>
+            <div className="col-md-6">
+              <label className="form-label">Payment Method</label>
               <select className="form-select" name="method" value={formData.method} onChange={handleChange}>
                 <option>UPI</option>
                 <option>NETBANKING</option>
@@ -125,17 +125,17 @@ function PaymentsListPage() {
                 <option>CHEQUE</option>
               </select>
             </div>
-            <div className="col-md-3">
-              <label className="form-label">Status</label>
+            <div className="col-md-6">
+              <label className="form-label">Payment Status</label>
               <select className="form-select" name="status" value={formData.status} onChange={handleChange}>
                 <option>COMPLETED</option>
                 <option>PENDING</option>
                 <option>FAILED</option>
               </select>
             </div>
-            <div className="col-md-9 d-flex align-items-end">
-              <button className="btn btn-primary" disabled={loading}>
-                {loading ? "Saving..." : "Capture Payment"}
+            <div className="col-12 text-end pt-2">
+              <button className="btn btn-primary px-5" disabled={loading}>
+                {loading ? "Saving..." : "Record Payment"}
               </button>
             </div>
           </form>
@@ -152,7 +152,7 @@ function PaymentsListPage() {
               { key: "accountId", label: "Account ID" },
               { key: "customerName", label: "Customer" },
               { key: "customerEmail", label: "Customer Email" },
-              { key: "amount", label: "Amount" },
+              { key: "amount", label: "Amount", render: (row) => `$${Number(row.amount || 0).toLocaleString()}` },
               { key: "method", label: "Method" },
               { key: "paymentDate", label: "Date" },
               { key: "status", label: "Status", type: "status" }

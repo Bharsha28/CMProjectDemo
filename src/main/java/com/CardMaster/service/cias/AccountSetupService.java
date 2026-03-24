@@ -68,6 +68,10 @@ public class AccountSetupService {
                 .orElseThrow(() -> new IllegalArgumentException("No account found for email: " + email));
     }
 
+    public java.util.List<CardAccount> getAllAccounts() {
+        return accountRepository.findAll();
+    }
+
     public CardAccount useCard(Long accountId, Double amount) {
         CardAccount account = getAccountById(accountId);
 

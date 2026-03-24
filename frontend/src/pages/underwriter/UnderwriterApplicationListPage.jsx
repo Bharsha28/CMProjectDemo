@@ -4,6 +4,8 @@ import DataTable from "../../components/DataTable";
 import { useState, useEffect } from "react";
 import { underwriterApi } from "../../services/api";
 
+import { Link } from "react-router-dom";
+
 function UnderwriterApplicationListPage() {
   const [rows, setRows] = useState([]);
 
@@ -14,20 +16,32 @@ function UnderwriterApplicationListPage() {
   return (
     <Layout section="underwriter" title="Underwriter Dashboard">
       <PageHeader
-        title="Application List Page"
+        title="Application List"
         subtitle="Review all applications waiting for underwriting action."
       />
 
-      <div className="card border-0 shadow-sm">
+      <div className="card border-0 shadow-sm col-12">
         <div className="card-body">
           <DataTable
             columns={[
+              { key: "applicationId", label: "App ID" },
               { key: "customerName", label: "Customer Name" },
-              { key: "customerEmail", label: "Customer Email" },
               { key: "productName", label: "Product" },
               { key: "requestedLimit", label: "Requested Limit" },
               { key: "applicationDate", label: "Date" },
-              { key: "status", label: "Status", type: "status" }
+              { key: "status", label: "Status", type: "status" },
+              {
+                key: "action",
+                label: "Action",
+                render: (row) => (
+                  <Link
+                    to={`/underwriter/decisions?appId=${row.applicationId}`}
+                    className="btn btn-sm btn-primary"
+                  >
+                    Review
+                  </Link>
+                )
+              }
             ]}
             rows={rows}
           />

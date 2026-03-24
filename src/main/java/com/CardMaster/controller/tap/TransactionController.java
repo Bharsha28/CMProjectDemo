@@ -13,17 +13,18 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/transactions")
+@RequestMapping("/api/transactions")
 @RequiredArgsConstructor
 public class TransactionController {
 
     private final TransactionService service;
     private final TransactionMapper mapper;
 
-    /**
-     * Authorize a new transaction (creates a hold and sets status=AUTHORIZED).
-     * Accepts TransactionDto to keep API decoupled from JPA entity.
-     */
+    @GetMapping("/recent")
+    public ResponseEntity<List<TransactionDto>> getRecent() {
+        return ResponseEntity.ok(service.getRecentTransactions().stream().map(mapper::toDTO).toList());
+    }
+
     @PostMapping("/authorize")
     @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN')")
     public ResponseEntity<TransactionDto> authorize(@RequestBody TransactionDto dto) {
@@ -37,7 +38,7 @@ public class TransactionController {
      */
     @PostMapping("/post/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','OFFICER')")
-    public ResponseEntity<TransactionDto> post(@PathVariable Long id) {
+    public ResponseEntity<TransactionDto> post(@PathVariable("id") Long id) {
         TransactionDto posted = service.post(id);
         return ResponseEntity.ok(posted);
     }
@@ -47,7 +48,7 @@ public class TransactionController {
      */
     @PostMapping("/reverse/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','OFFICER','RISK')")
-    public ResponseEntity<TransactionDto> reverse(@PathVariable Long id) {
+    public ResponseEntity<TransactionDto> reverse(@PathVariable("id") Long id) {
         Transaction reversed = service.reverse(id);
         return ResponseEntity.ok(mapper.toDTO(reversed));
     }
@@ -57,7 +58,7 @@ public class TransactionController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN','OFFICER','RISK')")
-    public ResponseEntity<TransactionDto> get(@PathVariable Long id) {
+    public ResponseEntity<TransactionDto> get(@PathVariable("id") Long id) {
         Transaction tx = service.getById(id);
         return ResponseEntity.ok(mapper.toDTO(tx));
     }

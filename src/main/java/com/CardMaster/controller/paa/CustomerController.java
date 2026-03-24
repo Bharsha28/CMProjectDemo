@@ -31,35 +31,23 @@ public class CustomerController {
                 .body(new ResponseStructure<>("Customer created successfully", created));
     }
 
+    @GetMapping("/my")
+    public ResponseEntity<ResponseStructure<CustomerDto>> getMyCustomer(
+            java.security.Principal principal,
+            @RequestHeader("Authorization") String token) {
+
+        CustomerDto customer = service.getCustomerByEmail(principal.getName(), token);
+        return ResponseEntity.ok(new ResponseStructure<>("Customer profile retrieved successfully", customer));
+    }
+
     // --- Get Customer by ID ---
     @GetMapping("/{id}")
     public ResponseEntity<ResponseStructure<CustomerDto>> getCustomer(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestHeader("Authorization") String token) {
 
         CustomerDto customer = service.getCustomer(id, token);
         return ResponseEntity.ok(new ResponseStructure<>("Customer retrieved successfully", customer));
-    }
-
-    // --- Update Customer ---
-    @PutMapping("/{id}")
-    public ResponseEntity<ResponseStructure<CustomerDto>> updateCustomer(
-            @PathVariable Long id,
-            @Valid @RequestBody CustomerDto dto,
-            @RequestHeader("Authorization") String token) {
-
-        CustomerDto updated = service.updateCustomer(id, dto, token);
-        return ResponseEntity.ok(new ResponseStructure<>("Customer updated successfully", updated));
-    }
-
-    // --- Delete Customer ---
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseStructure<Void>> deleteCustomer(
-            @PathVariable Long id,
-            @RequestHeader("Authorization") String token) {
-
-        service.deleteCustomer(id, token);
-        return ResponseEntity.ok(new ResponseStructure<>("Customer deleted successfully", null));
     }
 
     // --- Get All Customers ---
@@ -71,13 +59,25 @@ public class CustomerController {
         return ResponseEntity.ok(new ResponseStructure<>("Customers retrieved successfully", customers));
     }
 
-    @GetMapping("/my")
-    public ResponseEntity<ResponseStructure<CustomerDto>> getMyCustomer(
-            Principal principal,
+    // --- Update Customer ---
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseStructure<CustomerDto>> updateCustomer(
+            @PathVariable("id") Long id,
+            @Valid @RequestBody CustomerDto dto,
             @RequestHeader("Authorization") String token) {
 
-        CustomerDto customer = service.getCustomerByEmail(principal.getName(), token);
-        return ResponseEntity.ok(new ResponseStructure<>("Customer profile retrieved successfully", customer));
+        CustomerDto updated = service.updateCustomer(id, dto, token);
+        return ResponseEntity.ok(new ResponseStructure<>("Customer updated successfully", updated));
+    }
+
+    // --- Delete Customer ---
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseStructure<Void>> deleteCustomer(
+            @PathVariable("id") Long id,
+            @RequestHeader("Authorization") String token) {
+
+        service.deleteCustomer(id, token);
+        return ResponseEntity.ok(new ResponseStructure<>("Customer deleted successfully", null));
     }
 
     @PutMapping("/my")

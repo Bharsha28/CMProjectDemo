@@ -84,8 +84,8 @@ function CustomerDashboardHome() {
       </div>
 
       <div className="row g-4 mb-4">
-        <div className="col-lg-8">
-          <div className="card border-0 shadow-sm overflow-hidden h-100">
+        <div className="col-12">
+          <div className="card border-0 shadow-sm overflow-hidden mb-4">
             <div className="card-header bg-white border-0 p-0">
               <div className="nav nav-tabs nav-fill">
                 <button className={`nav-link border-0 py-3 ${hubTab === 'transactions' ? 'active fw-bold border-bottom border-primary' : 'text-muted'}`} onClick={() => setHubTab('transactions')}>
@@ -100,47 +100,54 @@ function CustomerDashboardHome() {
               </div>
             </div>
             <div className="card-body p-0">
-              {hubTab === "transactions" && (
-                <DataTable
-                  columns={[
-                    { key: "merchant", label: "Merchant" },
-                    { key: "amount", label: "Amount" },
-                    { key: "transactionDate", label: "Date" },
-                    { key: "status", label: "Status", type: "status" }
-                  ]}
-                  rows={transactionRows}
-                  emptyMessage="No transactions found."
-                />
-              )}
-              {hubTab === "statements" && (
-                <DataTable
-                  columns={[
-                    { key: "statementDate", label: "Statement Date" },
-                    { key: "totalDue", label: "Total Due" },
-                    { key: "dueDate", label: "Due Date" },
-                    { key: "status", label: "Status", type: "status" }
-                  ]}
-                  rows={statementRows}
-                  emptyMessage="No statements found."
-                />
-              )}
-              {hubTab === "payments" && (
-                <DataTable
-                  columns={[
-                    { key: "paymentId", label: "Payment ID" },
-                    { key: "amount", label: "Amount" },
-                    { key: "paymentDate", label: "Date" },
-                    { key: "status", label: "Status", type: "status" }
-                  ]}
-                  rows={paymentRows}
-                  emptyMessage="No payments found."
-                />
-              )}
+               {hubTab === 'transactions' && (
+                 <div className="p-3">
+                   <DataTable 
+                    columns={[
+                      { key: "transactionDate", label: "Date" },
+                      { key: "merchant", label: "Merchant" },
+                      { key: "amount", label: "Amount" },
+                      { key: "currency", label: "Curr" },
+                      { key: "status", label: "Status", type: "status" }
+                    ]} 
+                    rows={transactionRows} 
+                    emptyMessage="No transactions found."
+                  />
+                 </div>
+               )}
+               {hubTab === 'statements' && (
+                 <div className="p-3">
+                   <DataTable 
+                    columns={[
+                      { key: "statementDate", label: "Date" },
+                      { key: "totalDue", label: "Due" },
+                      { key: "dueDate", label: "Until" },
+                      { key: "status", label: "Status", type: "status" }
+                    ]} 
+                    rows={statementRows} 
+                    emptyMessage="No statements found."
+                  />
+                 </div>
+               )}
+               {hubTab === 'payments' && (
+                 <div className="p-3">
+                   <DataTable 
+                    columns={[
+                      { key: "paymentDate", label: "Date" },
+                      { key: "amount", label: "Amount" },
+                      { key: "status", label: "Status", type: "status" }
+                    ]} 
+                    rows={paymentRows} 
+                    emptyMessage="No payments found."
+                  />
+                 </div>
+               )}
             </div>
           </div>
         </div>
-        <div className="col-lg-4">
-          <div className="card border-0 shadow-sm h-100">
+
+        <div className="col-12">
+          <div className="card border-0 shadow-sm mb-4">
             <div className="card-body p-4">
               <h5 className="mb-4 d-flex justify-content-between align-items-center">
                 Profile Summary

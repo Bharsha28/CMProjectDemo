@@ -2,19 +2,22 @@ import { useState, useEffect } from "react";
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
-import { underwriterApi } from "../../services/api";
+import { underwriterApi, adminApi } from "../../services/api";
+import { useSearchParams } from "react-router-dom";
 
 const initialForm = {
   applicationId: "",
-  decision: "APPROVED",
-  approvedLimit: "",
-  notes: ""
+  decision: "APPROVE",
+  approvedLimit: ""
 };
 
 function UnderwritingDecisionPage() {
+  const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState(initialForm);
   const [history, setHistory] = useState([]);
   const [applicationList, setApplicationList] = useState([]);
+  const [scores, setScores] = useState([]);
+  const [products, setProducts] = useState([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,56 +25,84 @@ function UnderwritingDecisionPage() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [hData, aData] = await Promise.all([
+        const [hData, aData, sData, pData] = await Promise.all([
           underwriterApi.getUnderwritingHistory().catch(() => []),
-          underwriterApi.getApplications().catch(() => [])
+          underwriterApi.getApplications().catch(() => []),
+          underwriterApi.getCreditScores().catch(() => []),
+          adminApi.getProducts().catch(() => [])
         ]);
-        setHistory(hData);
-        setApplicationList(aData);
-        if (aData.length > 0) {
-          setFormData(f => ({...f, applicationId: String(aData[0].applicationId)}));
+        setHistory(hData || []);
+        setApplicationList(aData || []);
+        setScores(sData || []);
+        setProducts(pData?.data || []); // unwrapResponse handle for adminApi might differ or be raw
+
+        const queryAppId = searchParams.get("appId");
+        if (queryAppId) {
+          setFormData(f => ({ ...f, applicationId: queryAppId }));
+          autoCalculate(queryAppId, "APPROVE", aData, sData, pData?.data || []);
+        } else if (aData.length > 0) {
+          const firstId = String(aData[0].applicationId);
+          setFormData(f => ({ ...f, applicationId: firstId }));
+          autoCalculate(firstId, "APPROVE", aData, sData, pData?.data || []);
         }
       } catch (e) { console.error(e); }
     }
     loadData();
-  }, []);
+  }, [searchParams]);
 
-  function handleChange(event) {
-    const { name, value } = event.target;
-    setFormData((current) => ({ ...current, [name]: value }));
+  function autoCalculate(appId, decisionType, aList, sList, pList) {
+    const app = aList.find(a => String(a.applicationId) === appId);
+    const score = sList.find(s => String(s.applicationId) === appId);
+    const product = pList.find(p => p.name === app?.productName);
+    
+    if (!app) return;
+
+    let limit = 0;
+    let finalDecision = decisionType;
+
+    if (score && product) {
+      const scoreFactor = score.bureauScore / 900;
+      const maxProductLimit = product.maxCreditLimit || 100000;
+      const calculated = Math.round(maxProductLimit * scoreFactor);
+      limit = Math.min(app.requestedLimit, calculated);
+
+      // System suggestion if decisionType not explicitly clicked
+      if (!decisionType) {
+        if (score.bureauScore >= 750) finalDecision = "APPROVE";
+        else if (score.bureauScore >= 650) finalDecision = "CONDITIONAL";
+        else finalDecision = "REJECT";
+      }
+    } else {
+      limit = app.requestedLimit;
+    }
+
+    if (finalDecision === "REJECT") limit = 0;
+    if (finalDecision === "CONDITIONAL") limit = Math.round(limit / 2);
+
+    setFormData(f => ({ 
+      ...f, 
+      applicationId: appId,
+      decision: finalDecision, 
+      approvedLimit: String(limit) 
+    }));
   }
 
   async function handleSubmit(event) {
-    event.preventDefault();
+    if (event) event.preventDefault();
     setLoading(true);
     setError("");
     setMessage("");
-    const selectedApplication = applicationList.find(
-      (application) => String(application.applicationId) === formData.applicationId
-    );
 
     const payload = {
       decision: formData.decision,
-      approvedLimit: Number(formData.approvedLimit),
-      remarks: formData.notes
+      approvedLimit: Number(formData.approvedLimit)
     };
 
     try {
-      const response = await underwriterApi.createDecision(formData.applicationId, payload);
-      const newDecision = {
-        decisionId: Date.now(),
-        applicationId: response?.applicationId || Number(formData.applicationId),
-        customerEmail: selectedApplication?.customerEmail || "",
-        underwriter: "Current Underwriter",
-        decision: response?.decision || formData.decision,
-        approvedLimit: response?.approvedLimit || Number(formData.approvedLimit),
-        remarks: response?.remarks || formData.notes,
-        decisionDate: response?.decisionDate || new Date().toISOString().slice(0, 10)
-      };
-
-      setHistory((current) => [newDecision, ...current]);
-      setMessage("Underwriting decision saved through the backend.");
-      setFormData(initialForm);
+      await underwriterApi.createDecision(formData.applicationId, payload);
+      const hData = await underwriterApi.getUnderwritingHistory();
+      setHistory(hData || []);
+      setMessage("Decision saved successfully.");
     } catch (submitError) {
       setError(submitError.message || "Unable to save the decision.");
     } finally {
@@ -82,79 +113,93 @@ function UnderwritingDecisionPage() {
   return (
     <Layout section="underwriter" title="Underwriter Dashboard">
       <PageHeader
-        title="Underwriting Decision Page"
-        subtitle="Approve, reject or place applications on conditional approval with notes."
+        title="Underwriting Decision"
+        subtitle="Finalize credit decisions and set credit limits."
       />
 
       <div className="row g-4">
-        <div className="col-lg-5">
+        {/* Form Column */}
+        <div className="col-12">
           <div className="card border-0 shadow-sm">
             <div className="card-body p-4">
-              <form onSubmit={handleSubmit} className="row g-3">
-                <div className="col-12">
-                  <label className="form-label">Application</label>
-                  <select className="form-select" name="applicationId" value={formData.applicationId} onChange={handleChange} required>
-                    {applicationList.map((application) => (
-                      <option key={application.applicationId} value={application.applicationId}>
-                        {application.customerEmail} - {application.productName}
+              <div className="row g-3">
+                <div className="col-md-6">
+                  <label className="form-label">Select Application</label>
+                  <select 
+                    className="form-select" 
+                    value={formData.applicationId} 
+                    onChange={(e) => autoCalculate(e.target.value, "APPROVE", applicationList, scores, products)}
+                  >
+                    {applicationList.map((app) => (
+                      <option key={app.applicationId} value={app.applicationId}>
+                        {app.applicationId} - {app.customerName || "Customer"} (Requested: {app.requestedLimit})
                       </option>
                     ))}
                   </select>
                 </div>
-                <div className="col-12">
-                  <label className="form-label">Decision</label>
-                  <select className="form-select" name="decision" value={formData.decision} onChange={handleChange}>
-                    <option>APPROVED</option>
-                    <option>REJECTED</option>
-                    <option>CONDITIONAL</option>
-                  </select>
-                </div>
-                <div className="col-12">
+
+                <div className="col-md-6">
                   <label className="form-label">Approved Limit</label>
-                  <input type="number" className="form-control" name="approvedLimit" value={formData.approvedLimit} onChange={handleChange} required />
-                </div>
-                <div className="col-12">
-                  <label className="form-label d-flex justify-content-between">
-                    <span>Underwriter Notes</span>
-                    <span className={`small ${formData.notes.length > 200 ? 'text-danger' : 'text-muted'}`}>
-                      {formData.notes.length}/200
-                    </span>
-                  </label>
-                  <textarea 
+                  <input 
+                    type="number" 
                     className="form-control" 
-                    rows="4" 
-                    name="notes" 
-                    value={formData.notes} 
-                    onChange={handleChange} 
-                    required 
-                    maxLength="200"
+                    value={formData.approvedLimit} 
+                    onChange={(e) => setFormData({...formData, approvedLimit: e.target.value})}
                   />
                 </div>
+
                 <div className="col-12">
-                  <button className="btn btn-primary" disabled={loading}>
-                    {loading ? "Saving..." : "Save Decision"}
+                  <label className="form-label d-block">Set Decision</label>
+                  <div className="btn-group w-100" role="group">
+                    <button 
+                      type="button" 
+                      className={`btn ${formData.decision === 'APPROVE' ? 'btn-success' : 'btn-outline-success'}`}
+                      onClick={() => autoCalculate(formData.applicationId, "APPROVE", applicationList, scores, products)}
+                    >
+                      Approve
+                    </button>
+                    <button 
+                      type="button" 
+                      className={`btn ${formData.decision === 'CONDITIONAL' ? 'btn-info text-white' : 'btn-outline-info'}`}
+                      onClick={() => autoCalculate(formData.applicationId, "CONDITIONAL", applicationList, scores, products)}
+                    >
+                      Conditional
+                    </button>
+                    <button 
+                      type="button" 
+                      className={`btn ${formData.decision === 'REJECT' ? 'btn-danger' : 'btn-outline-danger'}`}
+                      onClick={() => autoCalculate(formData.applicationId, "REJECT", applicationList, scores, products)}
+                    >
+                      Reject
+                    </button>
+                  </div>
+                </div>
+
+                <div className="col-12 d-flex justify-content-end mt-4">
+                  <button className="btn btn-primary px-5" onClick={handleSubmit} disabled={loading}>
+                    {loading ? "Saving..." : "Save"}
                   </button>
                 </div>
-              </form>
-              {message ? <div className="alert alert-success mt-4 mb-0">{message}</div> : null}
-              {error ? <div className="alert alert-danger mt-4 mb-0">{error}</div> : null}
+              </div>
+              {message && <div className="alert alert-success mt-3">{message}</div>}
+              {error && <div className="alert alert-danger mt-3">{error}</div>}
             </div>
           </div>
         </div>
 
-        <div className="col-lg-7">
+        {/* History Column */}
+        <div className="col-12">
           <div className="card border-0 shadow-sm">
             <div className="card-body">
-              <h5 className="mb-3">Underwriting History</h5>
+              <h5 className="mb-3">Decision History</h5>
               <DataTable
                 columns={[
-                  { key: "customerEmail", label: "Customer Email" },
-                  { key: "underwriter", label: "Underwriter" },
+                  { key: "customerName", label: "Customer" },
                   { key: "decision", label: "Decision", type: "status" },
-                  { key: "approvedLimit", label: "Approved Limit" },
-                  { key: "remarks", label: "Remarks" }
+                  { key: "approvedLimit", label: "Limit" },
+                  { key: "decisionDate", label: "Date" }
                 ]}
-                rows={history}
+                rows={history.slice(0, 5)}
               />
             </div>
           </div>

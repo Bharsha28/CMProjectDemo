@@ -22,6 +22,14 @@ public class CardIssuanceController {
     private final CardIssuanceService cardService;
     private final CardMapper cardMapper;
 
+    @GetMapping
+    public ResponseEntity<List<CardResponseDto>> getAllCards() {
+        List<Card> cards = cardService.getAllCards();
+        return ResponseEntity.ok(cards.stream()
+                .map(cardMapper::toDTO)
+                .collect(Collectors.toList()));
+    }
+
     @PostMapping
     public ResponseEntity<CardResponseDto> createCard(@RequestBody CardRequestDto request) {
         Card card = cardService.createCard(request);
@@ -29,13 +37,13 @@ public class CardIssuanceController {
     }
 
     @GetMapping("/{cardId}")
-    public ResponseEntity<CardResponseDto> getCard(@PathVariable Long cardId) {
+    public ResponseEntity<CardResponseDto> getCard(@PathVariable("cardId") Long cardId) {
         Card card = cardService.getCardById(cardId);
         return ResponseEntity.ok(cardMapper.toDTO(card));
     }
 
     @PostMapping("/block/{cardId}")
-    public ResponseEntity<CardResponseDto> blockCard(@PathVariable Long cardId) {
+    public ResponseEntity<CardResponseDto> blockCard(@PathVariable("cardId") Long cardId) {
         Card card = cardService.blockCard(cardId);
         return ResponseEntity.ok(cardMapper.toDTO(card));
     }

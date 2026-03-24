@@ -49,7 +49,7 @@ public class DocumentController {
     // --- Get Document by ID ---
     @GetMapping("/{id}")
     public ResponseEntity<ResponseStructure<DocumentDto>> getById(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestHeader("Authorization") String token) {
 
         log.info("Fetching document {}", id);
@@ -60,7 +60,7 @@ public class DocumentController {
     // --- Get Documents by Application ---
     @GetMapping("/application/{applicationId}")
     public ResponseEntity<ResponseStructure<List<DocumentDto>>> getByApplication(
-            @PathVariable Long applicationId,
+            @PathVariable("applicationId") Long applicationId,
             @RequestHeader("Authorization") String token) {
 
         log.info("Fetching documents for application {}", applicationId);
@@ -71,8 +71,8 @@ public class DocumentController {
     // --- Update Document Status ---
     @PutMapping("/{id}/status")
     public ResponseEntity<ResponseStructure<DocumentDto>> updateStatus(
-            @PathVariable Long id,
-            @RequestParam String status,
+            @PathVariable("id") Long id,
+            @RequestParam("status") String status,
             @RequestHeader("Authorization") String token) {
 
         log.info("Updating document {} status to {}", id, status);
@@ -83,7 +83,7 @@ public class DocumentController {
     // --- Delete Document ---
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseStructure<Void>> deleteDocument(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @RequestHeader("Authorization") String token) {
 
         log.info("Deleting document {}", id);

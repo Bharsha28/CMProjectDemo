@@ -13,7 +13,7 @@ import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/billing/payments")
+@RequestMapping("/api/billing/payments")
 @RequiredArgsConstructor
 public class PaymentController {
 
@@ -37,7 +37,7 @@ public class PaymentController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN','OFFICER')")
-    public ResponseEntity<PaymentDto> get(@PathVariable Long id) {
+    public ResponseEntity<PaymentDto> get(@PathVariable("id") Long id) {
         Payment p = service.getById(id);
         return ResponseEntity.ok(mapper.toDTO(p));
     }

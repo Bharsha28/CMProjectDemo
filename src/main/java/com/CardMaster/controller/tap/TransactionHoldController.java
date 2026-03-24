@@ -37,7 +37,7 @@ public class TransactionHoldController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','OFFICER','RISK')")
-    public ResponseEntity<TransactionHoldDto> get(@PathVariable Long id) {
+    public ResponseEntity<TransactionHoldDto> get(@PathVariable("id") Long id) {
         TransactionHold hold = service.getById(id);
         return ResponseEntity.ok(mapper.toDTO(hold));
     }
@@ -47,7 +47,7 @@ public class TransactionHoldController {
      */
     @GetMapping("/by-transaction/{transactionId}")
     @PreAuthorize("hasAnyRole('ADMIN','OFFICER','RISK')")
-    public ResponseEntity<List<TransactionHoldDto>> listByTransaction(@PathVariable Long transactionId) {
+    public ResponseEntity<List<TransactionHoldDto>> listByTransaction(@PathVariable("transactionId") Long transactionId) {
         List<TransactionHold> holds = service.listByTransaction(transactionId);
         return ResponseEntity.ok(holds.stream().map(mapper::toDTO).toList());
     }
@@ -57,7 +57,7 @@ public class TransactionHoldController {
      */
     @PostMapping("/release/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','OFFICER','RISK')")
-    public ResponseEntity<TransactionHoldDto> release(@PathVariable Long id) {
+    public ResponseEntity<TransactionHoldDto> release(@PathVariable("id") Long id) {
         TransactionHold released = service.release(id);
         return ResponseEntity.ok(mapper.toDTO(released));
     }

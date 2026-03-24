@@ -49,35 +49,18 @@ function UnderwriterDashboardHome() {
       </div>
 
       <div className="row g-4">
-        <div className="col-lg-7">
+        <div className="col-12">
           <div className="card border-0 shadow-sm">
             <div className="card-body">
               <h5 className="mb-3">Applications Waiting for Review</h5>
               <DataTable
                 columns={[
+                  { key: "applicationId", label: "App ID" },
                   { key: "customerName", label: "Customer" },
-                  { key: "customerEmail", label: "Customer Email" },
                   { key: "requestedLimit", label: "Requested Limit" },
                   { key: "status", label: "Status", type: "status" }
                 ]}
                 rows={apps.filter((item) => item.status !== "Approved")}
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="col-lg-5">
-          <div className="card border-0 shadow-sm">
-            <div className="card-body">
-              <h5 className="mb-3">Recent Underwriting History</h5>
-              <DataTable
-                columns={[
-                  { key: "customerEmail", label: "Customer Email" },
-                  { key: "decision", label: "Decision", type: "status" },
-                  { key: "approvedLimit", label: "Approved Limit" },
-                  { key: "decisionDate", label: "Decision Date" }
-                ]}
-                rows={history}
               />
             </div>
           </div>

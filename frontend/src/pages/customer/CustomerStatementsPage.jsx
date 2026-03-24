@@ -56,26 +56,18 @@ function CustomerStatementsPage() {
         <div className="card-body p-0">
           <DataTable
             columns={[
-              { key: "statementId", label: "Statement ID" },
-              { key: "periodStart", label: "Period Start" },
-              { key: "periodEnd", label: "Period End" },
-              { key: "totalDue", label: "Total Due", render: (val) => `$${Number(val).toLocaleString()}` },
-              { key: "minimumDue", label: "Min Due", render: (val) => `$${Number(val).toLocaleString()}` },
-              { key: "dueDate", label: "Due Date" },
+              { key: "period", label: "Billing Period", render: (row) => `${row.periodStart} to ${row.periodEnd}` },
+              { key: "totalDue", label: "Total Due", render: (row) => `$${Number(row.totalDue || 0).toLocaleString()}` },
+              { key: "minimumDue", label: "Min Due", render: (row) => `$${Number(row.minimumDue || 0).toLocaleString()}` },
+              { key: "generatedDate", label: "Due Date" },
               { key: "status", label: "Status", type: "status" },
               {
                 key: "actions",
                 label: "Actions",
                 render: (row) => (
-                  <button
-                    className="btn btn-sm btn-primary px-3"
-                    disabled={row.status !== "OPEN"}
-                    onClick={() => {
-                        window.location.href = "/customer/payments"; // Mock redirect to payments
-                    }}
-                  >
-                    Pay Now
-                  </button>
+                    <button className="btn btn-sm btn-outline-primary" onClick={() => window.location.href='/customer/payments'}>
+                        Pay Now
+                    </button>
                 )
               }
             ]}

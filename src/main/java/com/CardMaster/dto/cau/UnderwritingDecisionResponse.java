@@ -15,6 +15,7 @@ public class UnderwritingDecisionResponse {
     private Long decisionId;
     private Long applicationId;
     private Long underwriterId;
+    private String customerName;
     private UnderwritingDecisionType decision;
     private Double approvedLimit;
     private String remarks;

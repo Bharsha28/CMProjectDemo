@@ -91,70 +91,64 @@ function CardIssuancePage() {
         subtitle="Generate a new card, activate it and update card status."
       />
 
-      <div className="row g-4">
-        <div className="col-lg-5">
-          <div className="card border-0 shadow-sm">
-            <div className="card-body p-4">
-              <form onSubmit={handleSubmit} className="row g-3">
-                <div className="col-12">
-                  <label className="form-label">Approved Application</label>
-                  <select className="form-select" name="applicationId" value={formData.applicationId} onChange={handleChange} required>
-                    {applicationList
-                      .filter((application) => application.status === "APPROVED")
-                      .map((application) => (
-                        <option key={application.applicationId} value={application.applicationId}>
-                          {application.customerEmail} - {application.productName}
-                        </option>
-                      ))}
-                  </select>
-                </div>
-                <div className="col-12">
-                  <label className="form-label">Masked Card Number</label>
-                  <input className="form-control" name="maskedCardNumber" value={formData.maskedCardNumber} onChange={handleChange} placeholder="4567 XXXX XXXX 1234" required />
-                </div>
-                <div className="col-12">
-                  <label className="form-label">Expiry Date</label>
-                  <input type="month" className="form-control" name="expiryDate" value={formData.expiryDate} onChange={handleChange} required />
-                </div>
-                <div className="col-12">
-                  <label className="form-label">CVV Hash</label>
-                  <input className="form-control" name="cvvHash" value={formData.cvvHash} onChange={handleChange} placeholder="hashed-cvv-value" required />
-                </div>
-                <div className="col-12">
-                  <label className="form-label">Card Status</label>
-                  <select className="form-select" name="status" value={formData.status} onChange={handleChange}>
-                    <option>ISSUED</option>
-                    <option>ACTIVE</option>
-                    <option>BLOCKED</option>
-                  </select>
-                </div>
-                <div className="col-12">
-                  <button className="btn btn-primary" disabled={loading}>
-                    {loading ? "Saving..." : "Generate Card"}
-                  </button>
-                </div>
-              </form>
-              {message ? <div className="alert alert-success mt-4 mb-0">{message}</div> : null}
-              {error ? <div className="alert alert-danger mt-4 mb-0">{error}</div> : null}
+      <div className="card border-0 shadow-sm mb-4">
+        <div className="card-body p-4">
+          <form onSubmit={handleSubmit} className="row g-3">
+            <div className="col-md-6">
+              <label className="form-label">Approved Application</label>
+              <select className="form-select" name="applicationId" value={formData.applicationId} onChange={handleChange} required>
+                <option value="">Select Approved Application</option>
+                {applicationList
+                  .filter((application) => ["Approved", "Conditional"].includes(application.status))
+                  .map((application) => (
+                    <option key={application.applicationId} value={application.applicationId}>
+                      {application.customerName} - {application.productName} (ID: {application.applicationId})
+                    </option>
+                  ))}
+              </select>
             </div>
-          </div>
+            <div className="col-md-6">
+              <label className="form-label">Masked Card Number</label>
+              <input className="form-control" name="maskedCardNumber" value={formData.maskedCardNumber} onChange={handleChange} placeholder="4567 XXXX XXXX 1234" required />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">Expiry Date</label>
+              <input type="month" className="form-control" name="expiryDate" value={formData.expiryDate} onChange={handleChange} required />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">CVV Hash</label>
+              <input className="form-control" name="cvvHash" value={formData.cvvHash} onChange={handleChange} placeholder="hashed-cvv-value" required />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label">Card Status</label>
+              <select className="form-select" name="status" value={formData.status} onChange={handleChange}>
+                <option>ISSUED</option>
+                <option>ACTIVE</option>
+                <option>BLOCKED</option>
+              </select>
+            </div>
+            <div className="col-12 d-flex justify-content-end mt-3">
+              <button className="btn btn-primary px-4" disabled={loading}>
+                {loading ? "Saving..." : "Generate"}
+              </button>
+            </div>
+          </form>
+          {message ? <div className="alert alert-success mt-4 mb-0">{message}</div> : null}
+          {error ? <div className="alert alert-danger mt-4 mb-0">{error}</div> : null}
         </div>
+      </div>
 
-        <div className="col-lg-7">
-          <div className="card border-0 shadow-sm">
-            <div className="card-body">
-              <DataTable
-                columns={[
-                  { key: "customerName", label: "Customer" },
-                  { key: "customerEmail", label: "Customer Email" },
-                  { key: "productName", label: "Product" },
-                  { key: "expiryDate", label: "Expiry" },
-                  { key: "status", label: "Status", type: "status" }
-                ]}
-                rows={cardRows}
-              />
-            </div>
-          </div>
+      <div className="card border-0 shadow-sm">
+        <div className="card-body p-0">
+          <DataTable
+            columns={[
+              { key: "customerName", label: "Customer" },
+              { key: "productName", label: "Product" },
+              { key: "expiryDate", label: "Expiry" },
+              { key: "status", label: "Status", type: "status" }
+            ]}
+            rows={cardRows}
+          />
         </div>
       </div>
     </Layout>
