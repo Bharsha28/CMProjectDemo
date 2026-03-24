@@ -2,7 +2,8 @@ import { useState } from "react";
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
-import { cardProducts, feeConfigs } from "../../data/mockData";
+import { useEffect } from "react";
+import { adminApi } from "../../services/api";
 
 const initialForm = {
   productId: "1",
@@ -12,29 +13,47 @@ const initialForm = {
 
 function FeeConfigPage() {
   const [formData, setFormData] = useState(initialForm);
-  const [rows, setRows] = useState(feeConfigs);
+  const [products, setProducts] = useState([]);
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [loadedProducts, loadedFees] = await Promise.all([
+          adminApi.getProducts(),
+          adminApi.getFees()
+        ]);
+        setProducts(loadedProducts);
+        setRows(loadedFees);
+      } catch (e) {
+        console.error("Failed to fetch fee data");
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
 
   function handleChange(event) {
     const { name, value } = event.target;
     setFormData((current) => ({ ...current, [name]: value }));
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    const product = cardProducts.find((item) => String(item.productId) === formData.productId);
-
-    setRows((current) => [
-      {
-        feeId: Date.now(),
-        productId: Number(formData.productId),
-        productName: product?.name || "Card Product",
-        feeType: formData.feeType,
-        amount: Number(formData.amount)
-      },
-      ...current
-    ]);
-
-    setFormData(initialForm);
+    try {
+      const payload = {
+          productId: Number(formData.productId),
+          feeType: formData.feeType,
+          amount: Number(formData.amount)
+      };
+      const response = await adminApi.createFee(payload);
+      setRows((curr) => [response, ...curr]);
+      setFormData(initialForm);
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   return (
@@ -52,7 +71,7 @@ function FeeConfigPage() {
                 <div className="col-12">
                   <label className="form-label">Card Product</label>
                   <select className="form-select" name="productId" value={formData.productId} onChange={handleChange}>
-                    {cardProducts.map((product) => (
+                    {products.map((product) => (
                       <option key={product.productId} value={product.productId}>
                         {product.name}
                       </option>

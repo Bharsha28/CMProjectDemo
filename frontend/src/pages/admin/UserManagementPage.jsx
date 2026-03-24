@@ -2,7 +2,7 @@ import { useState } from "react";
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
-import { users } from "../../data/mockData";
+import { useEffect } from "react";
 import { adminApi } from "../../services/api";
 
 const initialForm = {
@@ -15,10 +15,24 @@ const initialForm = {
 
 function UserManagementPage() {
   const [formData, setFormData] = useState(initialForm);
-  const [rows, setRows] = useState(users);
+  const [rows, setRows] = useState([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const data = await adminApi.getUsers();
+        setRows(data);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
 
   function handleChange(event) {
     const { name, value } = event.target;

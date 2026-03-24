@@ -2,11 +2,10 @@ import { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
-import { accounts, payments, statements } from "../../data/mockData";
 import { operationsApi } from "../../services/api";
 
 const initialForm = {
-  accountId: String(accounts[0]?.accountId || ""),
+  accountId: "",
   statementId: "",
   amount: "",
   paymentDate: "",
@@ -15,7 +14,9 @@ const initialForm = {
 };
 
 function PaymentsListPage() {
-  const [rows, setRows] = useState(payments);
+  const [rows, setRows] = useState([]);
+  const [accountList, setAccountList] = useState([]);
+  const [statementList, setStatementList] = useState([]);
   const [formData, setFormData] = useState(initialForm);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -23,8 +24,21 @@ function PaymentsListPage() {
 
   useEffect(() => {
     async function loadPayments() {
-      const response = await operationsApi.getPayments();
-      setRows(Array.isArray(response) ? response : payments);
+      try {
+        const [pData, aData, sData] = await Promise.all([
+          operationsApi.getPayments().catch(() => []),
+          operationsApi.getAccounts().catch(() => []),
+          operationsApi.getStatements().catch(() => [])
+        ]);
+        setRows(pData);
+        setAccountList(aData);
+        setStatementList(sData);
+        if (aData.length > 0) {
+           setFormData(f => ({...f, accountId: String(aData[0].accountId)}));
+        }
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     loadPayments();
@@ -74,7 +88,7 @@ function PaymentsListPage() {
             <div className="col-md-3">
               <label className="form-label">Account</label>
               <select className="form-select" name="accountId" value={formData.accountId} onChange={handleChange}>
-                {accounts.map((account) => (
+                {accountList.map((account) => (
                   <option key={account.accountId} value={account.accountId}>
                     {account.customerEmail} - {account.accountId}
                   </option>
@@ -85,7 +99,7 @@ function PaymentsListPage() {
               <label className="form-label">Open Statement</label>
               <select className="form-select" name="statementId" value={formData.statementId} onChange={handleChange}>
                 <option value="">Auto-pick latest open statement</option>
-                {statements
+                {statementList
                   .filter((statement) => statement.status === "OPEN")
                   .map((statement) => (
                     <option key={statement.statementId} value={statement.statementId}>

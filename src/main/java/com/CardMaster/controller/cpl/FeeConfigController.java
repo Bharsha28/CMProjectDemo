@@ -56,4 +56,9 @@ public class FeeConfigController {
     public ResponseEntity<List<FeeConfigResponseDto>> getFeesByProduct(@PathVariable Long productId) {
         return ResponseEntity.ok(service.getFeesByProduct(productId));
     }
+
+    @GetMapping
+    public ResponseEntity<List<FeeConfigResponseDto>> getAllFees() {
+        return ResponseEntity.ok(service.getAllFees());
+    }
 }

@@ -1,12 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
-import { applications, cards } from "../../data/mockData";
-import { operationsApi } from "../../services/api";
+import { operationsApi, underwriterApi } from "../../services/api";
 
 const initialForm = {
-  applicationId: String(applications.find((item) => item.status === "APPROVED")?.applicationId || ""),
+  applicationId: "",
   maskedCardNumber: "",
   expiryDate: "",
   cvvHash: "",
@@ -15,10 +14,29 @@ const initialForm = {
 
 function CardIssuancePage() {
   const [formData, setFormData] = useState(initialForm);
-  const [cardRows, setCardRows] = useState(cards);
+  const [cardRows, setCardRows] = useState([]);
+  const [applicationList, setApplicationList] = useState([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const [cData, aData] = await Promise.all([
+          operationsApi.getCards().catch(() => []),
+          underwriterApi.getApplications().catch(() => [])
+        ]);
+        setCardRows(cData);
+        setApplicationList(aData);
+        const approved = aData.find(a => a.status === "APPROVED");
+        if (approved) {
+           setFormData(f => ({...f, applicationId: String(approved.applicationId)}));
+        }
+      } catch (e) { console.error(e); }
+    }
+    load();
+  }, []);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -30,7 +48,7 @@ function CardIssuancePage() {
     setLoading(true);
     setError("");
     setMessage("");
-    const selectedApplication = applications.find(
+    const selectedApplication = applicationList.find(
       (application) => String(application.applicationId) === formData.applicationId
     );
 
@@ -81,7 +99,7 @@ function CardIssuancePage() {
                 <div className="col-12">
                   <label className="form-label">Approved Application</label>
                   <select className="form-select" name="applicationId" value={formData.applicationId} onChange={handleChange} required>
-                    {applications
+                    {applicationList
                       .filter((application) => application.status === "APPROVED")
                       .map((application) => (
                         <option key={application.applicationId} value={application.applicationId}>

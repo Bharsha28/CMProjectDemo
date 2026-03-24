@@ -2,17 +2,17 @@ import { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
-import { accounts, statements } from "../../data/mockData";
 import { operationsApi } from "../../services/api";
 
 const initialForm = {
-  accountId: String(accounts[0]?.accountId || ""),
+  accountId: "",
   periodStart: "",
   periodEnd: ""
 };
 
 function StatementsListPage() {
-  const [rows, setRows] = useState(statements);
+  const [rows, setRows] = useState([]);
+  const [accountList, setAccountList] = useState([]);
   const [formData, setFormData] = useState(initialForm);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -20,8 +20,19 @@ function StatementsListPage() {
 
   useEffect(() => {
     async function loadStatements() {
-      const response = await operationsApi.getStatements();
-      setRows(Array.isArray(response) ? response : statements);
+      try {
+        const [sData, aData] = await Promise.all([
+           operationsApi.getStatements().catch(() => []),
+           operationsApi.getAccounts().catch(() => [])
+        ]);
+        setRows(sData);
+        setAccountList(aData);
+        if (aData.length > 0) {
+            setFormData(f => ({...f, accountId: String(aData[0].accountId)}));
+        }
+      } catch (e) {
+          console.error(e);
+      }
     }
 
     loadStatements();
@@ -85,7 +96,7 @@ function StatementsListPage() {
             <div className="col-md-4">
               <label className="form-label">Account</label>
               <select className="form-select" name="accountId" value={formData.accountId} onChange={handleChange}>
-                {accounts.map((account) => (
+                {accountList.map((account) => (
                   <option key={account.accountId} value={account.accountId}>
                     {account.customerEmail} - {account.accountId}
                   </option>

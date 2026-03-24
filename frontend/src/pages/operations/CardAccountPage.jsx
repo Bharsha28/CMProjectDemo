@@ -1,20 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
-import { accounts, cards } from "../../data/mockData";
 import { operationsApi } from "../../services/api";
 
 const initialForm = {
-  cardId: String(cards[0]?.cardId || "")
+  cardId: ""
 };
 
 function CardAccountPage() {
   const [formData, setFormData] = useState(initialForm);
-  const [rows, setRows] = useState(accounts);
+  const [rows, setRows] = useState([]);
+  const [cardList, setCardList] = useState([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [aData, cData] = await Promise.all([
+           operationsApi.getAccounts().catch(() => []),
+           operationsApi.getCards().catch(() => [])
+        ]);
+        setRows(aData);
+        setCardList(cData);
+        if (cData.length > 0) {
+           setFormData(f => ({...f, cardId: String(cData[0].cardId)}));
+        }
+      } catch (e) { console.error(e); }
+    }
+    loadData();
+  }, []);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -26,7 +43,7 @@ function CardAccountPage() {
     setLoading(true);
     setError("");
     setMessage("");
-    const selectedCard = cards.find((card) => String(card.cardId) === formData.cardId);
+    const selectedCard = cardList.find((card) => String(card.cardId) === formData.cardId);
 
     try {
       const response = await operationsApi.createAccount({
@@ -69,7 +86,7 @@ function CardAccountPage() {
                 <div className="col-12">
                   <label className="form-label">Issued Card</label>
                   <select className="form-select" name="cardId" value={formData.cardId} onChange={handleChange} required>
-                    {cards.map((card) => (
+                    {cardList.map((card) => (
                       <option key={card.cardId} value={card.cardId}>
                         {card.customerEmail} - {card.maskedCardNumber}
                       </option>

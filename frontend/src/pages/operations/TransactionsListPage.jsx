@@ -2,11 +2,10 @@ import { useEffect, useState } from "react";
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
-import { accounts, transactions } from "../../data/mockData";
 import { operationsApi } from "../../services/api";
 
 const initialForm = {
-  accountId: String(accounts[0]?.accountId || ""),
+  accountId: "",
   amount: "",
   currency: "INR",
   merchant: "",
@@ -14,7 +13,8 @@ const initialForm = {
 };
 
 function TransactionsListPage() {
-  const [rows, setRows] = useState(transactions);
+  const [rows, setRows] = useState([]);
+  const [accountList, setAccountList] = useState([]);
   const [formData, setFormData] = useState(initialForm);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -22,8 +22,19 @@ function TransactionsListPage() {
 
   useEffect(() => {
     async function loadTransactions() {
-      const response = await operationsApi.getTransactions();
-      setRows(Array.isArray(response) ? response : transactions);
+      try {
+        const [tData, aData] = await Promise.all([
+           operationsApi.getTransactions().catch(() => []),
+           operationsApi.getAccounts().catch(() => [])
+        ]);
+        setRows(tData);
+        setAccountList(aData);
+        if (aData.length > 0) {
+            setFormData(f => ({...f, accountId: String(aData[0].accountId)}));
+        }
+      } catch (e) {
+          console.error(e);
+      }
     }
 
     loadTransactions();
@@ -107,7 +118,7 @@ function TransactionsListPage() {
             <div className="col-md-3">
               <label className="form-label">Account</label>
               <select className="form-select" name="accountId" value={formData.accountId} onChange={handleChange}>
-                {accounts.map((account) => (
+                {accountList.map((account) => (
                   <option key={account.accountId} value={account.accountId}>
                     {account.customerEmail} - {account.accountId}
                   </option>

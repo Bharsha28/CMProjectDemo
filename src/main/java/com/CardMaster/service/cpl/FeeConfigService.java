@@ -75,4 +75,11 @@ public class FeeConfigService {
                 .map(mapper::toResponse)
                 .toList();
     }
+
+    public List<FeeConfigResponseDto> getAllFees() {
+        return feeRepo.findAll()
+                .stream()
+                .map(mapper::toResponse)
+                .toList();
+    }
 }

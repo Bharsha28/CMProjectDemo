@@ -1,12 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
-import { applications, underwritingHistory } from "../../data/mockData";
 import { underwriterApi } from "../../services/api";
 
 const initialForm = {
-  applicationId: String(applications[0]?.applicationId || ""),
+  applicationId: "",
   decision: "APPROVED",
   approvedLimit: "",
   notes: ""
@@ -14,10 +13,28 @@ const initialForm = {
 
 function UnderwritingDecisionPage() {
   const [formData, setFormData] = useState(initialForm);
-  const [history, setHistory] = useState(underwritingHistory);
+  const [history, setHistory] = useState([]);
+  const [applicationList, setApplicationList] = useState([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [hData, aData] = await Promise.all([
+          underwriterApi.getUnderwritingHistory().catch(() => []),
+          underwriterApi.getApplications().catch(() => [])
+        ]);
+        setHistory(hData);
+        setApplicationList(aData);
+        if (aData.length > 0) {
+          setFormData(f => ({...f, applicationId: String(aData[0].applicationId)}));
+        }
+      } catch (e) { console.error(e); }
+    }
+    loadData();
+  }, []);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -29,7 +46,7 @@ function UnderwritingDecisionPage() {
     setLoading(true);
     setError("");
     setMessage("");
-    const selectedApplication = applications.find(
+    const selectedApplication = applicationList.find(
       (application) => String(application.applicationId) === formData.applicationId
     );
 
@@ -77,7 +94,7 @@ function UnderwritingDecisionPage() {
                 <div className="col-12">
                   <label className="form-label">Application</label>
                   <select className="form-select" name="applicationId" value={formData.applicationId} onChange={handleChange} required>
-                    {applications.map((application) => (
+                    {applicationList.map((application) => (
                       <option key={application.applicationId} value={application.applicationId}>
                         {application.customerEmail} - {application.productName}
                       </option>

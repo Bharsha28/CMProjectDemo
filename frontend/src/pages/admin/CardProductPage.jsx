@@ -2,7 +2,8 @@ import { useState } from "react";
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
-import { cardProducts } from "../../data/mockData";
+import { useEffect } from "react";
+import { adminApi } from "../../services/api";
 
 const initialForm = {
   name: "",
@@ -14,23 +15,37 @@ const initialForm = {
 
 function CardProductPage() {
   const [formData, setFormData] = useState(initialForm);
-  const [rows, setRows] = useState(cardProducts);
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const data = await adminApi.getProducts();
+        setRows(data);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+  }, []);
 
   function handleChange(event) {
     const { name, value } = event.target;
     setFormData((current) => ({ ...current, [name]: value }));
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
-    setRows((current) => [
-      {
-        productId: Date.now(),
-        ...formData
-      },
-      ...current
-    ]);
-    setFormData(initialForm);
+    try {
+        const response = await adminApi.createProduct(formData);
+        setRows((current) => [response, ...current]);
+        setFormData(initialForm);
+    } catch (e) {
+        console.error(e);
+    }
   }
 
   return (

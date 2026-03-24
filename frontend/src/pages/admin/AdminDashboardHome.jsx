@@ -2,14 +2,31 @@ import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import StatCard from "../../components/StatCard";
 import DataTable from "../../components/DataTable";
-import { applications, payments, statements, users } from "../../data/mockData";
-
+import { useState, useEffect } from "react";
+import { adminApi, customerApi, operationsApi } from "../../services/api";
 function AdminDashboardHome() {
+  const [data, setData] = useState({ users: [], applications: [], statements: [], payments: [] });
+
+  useEffect(() => {
+    async function fetchDashboard() {
+      try {
+        const [u, a, s, p] = await Promise.all([
+          adminApi.getUsers().catch(() => []),
+          customerApi.getApplications().catch(() => []),
+          operationsApi.getStatements().catch(() => []),
+          operationsApi.getPayments().catch(() => [])
+        ]);
+        setData({ users: u, applications: a, statements: s, payments: p });
+      } catch (e) { console.error(e); }
+    }
+    fetchDashboard();
+  }, []);
+
   const stats = [
-    { title: "Users", value: users.length, icon: "bi-people", accent: "primary" },
-    { title: "Applications", value: applications.length, icon: "bi-files", accent: "warning" },
-    { title: "Statements", value: statements.length, icon: "bi-journal-text", accent: "success" },
-    { title: "Payments", value: payments.length, icon: "bi-wallet2", accent: "info" }
+    { title: "Users", value: data.users.length, icon: "bi-people", accent: "primary" },
+    { title: "Applications", value: data.applications.length, icon: "bi-files", accent: "warning" },
+    { title: "Statements", value: data.statements.length, icon: "bi-journal-text", accent: "success" },
+    { title: "Payments", value: data.payments.length, icon: "bi-wallet2", accent: "info" }
   ];
 
   return (
@@ -42,7 +59,7 @@ function AdminDashboardHome() {
               { key: "requestedLimit", label: "Requested Limit" },
               { key: "status", label: "Status", type: "status" }
             ]}
-            rows={applications}
+            rows={data.applications}
           />
         </div>
       </div>

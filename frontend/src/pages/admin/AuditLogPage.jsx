@@ -1,9 +1,24 @@
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
-import { auditLogs } from "../../data/mockData";
+import { useState, useEffect } from "react";
+import { adminApi } from "../../services/api";
 
 function AuditLogPage() {
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const data = await adminApi.getAuditLogs();
+        setRows(data);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    loadData();
+  }, []);
+
   return (
     <Layout section="admin" title="Admin Dashboard">
       <PageHeader
@@ -20,7 +35,7 @@ function AuditLogPage() {
               { key: "resource", label: "Resource" },
               { key: "timestamp", label: "Timestamp" }
             ]}
-            rows={auditLogs}
+            rows={rows}
           />
         </div>
       </div>

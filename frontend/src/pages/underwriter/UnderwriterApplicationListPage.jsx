@@ -1,9 +1,16 @@
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
-import { applications } from "../../data/mockData";
+import { useState, useEffect } from "react";
+import { underwriterApi } from "../../services/api";
 
 function UnderwriterApplicationListPage() {
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    underwriterApi.getApplications().then(setRows).catch(console.error);
+  }, []);
+
   return (
     <Layout section="underwriter" title="Underwriter Dashboard">
       <PageHeader
@@ -22,7 +29,7 @@ function UnderwriterApplicationListPage() {
               { key: "applicationDate", label: "Date" },
               { key: "status", label: "Status", type: "status" }
             ]}
-            rows={applications}
+            rows={rows}
           />
         </div>
       </div>

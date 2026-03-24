@@ -1,9 +1,16 @@
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
-import { creditScores } from "../../data/mockData";
+import { useState, useEffect } from "react";
+import { underwriterApi } from "../../services/api";
 
 function CreditScoreViewPage() {
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    underwriterApi.getCreditScores().then(setRows).catch(console.error);
+  }, []);
+
   return (
     <Layout section="underwriter" title="Underwriter Dashboard">
       <PageHeader
@@ -24,7 +31,7 @@ function CreditScoreViewPage() {
                   { key: "riskBand", label: "Risk Band" },
                   { key: "generatedDate", label: "Generated Date" }
                 ]}
-                rows={creditScores}
+                rows={rows}
               />
             </div>
           </div>

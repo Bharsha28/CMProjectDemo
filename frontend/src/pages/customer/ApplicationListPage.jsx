@@ -2,12 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
-import { applications } from "../../data/mockData";
 import { customerApi } from "../../services/api";
 
 function ApplicationListPage() {
   const [statusFilter, setStatusFilter] = useState("All");
-  const [rows, setRows] = useState(applications);
+  const [rows, setRows] = useState([]);
 
   useEffect(() => {
     async function loadApplications() {
@@ -18,7 +17,7 @@ function ApplicationListPage() {
           setRows(apps);
         }
       } catch (error) {
-        setRows(applications);
+        setRows([]);
       }
     }
 

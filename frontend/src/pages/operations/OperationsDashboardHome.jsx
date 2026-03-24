@@ -2,14 +2,31 @@ import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import StatCard from "../../components/StatCard";
 import DataTable from "../../components/DataTable";
-import { cards, payments, statements, transactions } from "../../data/mockData";
-
+import { useState, useEffect } from "react";
+import { operationsApi } from "../../services/api";
 function OperationsDashboardHome() {
+  const [data, setData] = useState({ cards: [], transactions: [], statements: [], payments: [] });
+
+  useEffect(() => {
+    async function loadDashboard() {
+      try {
+        const [c, t, s, p] = await Promise.all([
+          operationsApi.getCards().catch(() => []),
+          operationsApi.getTransactions().catch(() => []),
+          operationsApi.getStatements().catch(() => []),
+          operationsApi.getPayments().catch(() => [])
+        ]);
+        setData({ cards: c, transactions: t, statements: s, payments: p });
+      } catch (e) { console.error(e); }
+    }
+    loadDashboard();
+  }, []);
+
   const stats = [
-    { title: "Cards Issued", value: cards.length, icon: "bi-credit-card", accent: "primary" },
-    { title: "Posted Transactions", value: transactions.filter((item) => item.status === "Posted").length, icon: "bi-arrow-left-right", accent: "success" },
-    { title: "Open Statements", value: statements.filter((item) => item.status === "Open").length, icon: "bi-receipt", accent: "warning" },
-    { title: "Payments Received", value: payments.length, icon: "bi-cash-stack", accent: "info" }
+    { title: "Cards Issued", value: data.cards.length, icon: "bi-credit-card", accent: "primary" },
+    { title: "Posted Transactions", value: data.transactions.filter((item) => item.status === "Posted").length, icon: "bi-arrow-left-right", accent: "success" },
+    { title: "Open Statements", value: data.statements.filter((item) => item.status === "Open").length, icon: "bi-receipt", accent: "warning" },
+    { title: "Payments Received", value: data.payments.length, icon: "bi-cash-stack", accent: "info" }
   ];
 
   return (
@@ -42,7 +59,7 @@ function OperationsDashboardHome() {
               { key: "maskedCardNumber", label: "Card Number" },
               { key: "status", label: "Status", type: "status" }
             ]}
-            rows={cards}
+            rows={data.cards}
           />
         </div>
       </div>

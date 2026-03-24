@@ -2,14 +2,31 @@ import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import StatCard from "../../components/StatCard";
 import DataTable from "../../components/DataTable";
-import { applications, underwritingHistory } from "../../data/mockData";
-
+import { useState, useEffect } from "react";
+import { underwriterApi } from "../../services/api";
 function UnderwriterDashboardHome() {
+  const [apps, setApps] = useState([]);
+  const [history, setHistory] = useState([]);
+
+  useEffect(() => {
+    async function loadDashboard() {
+      try {
+        const [a, h] = await Promise.all([
+          underwriterApi.getApplications().catch(() => []),
+          underwriterApi.getUnderwritingHistory().catch(() => [])
+        ]);
+        setApps(a);
+        setHistory(h);
+      } catch (e) { console.error(e); }
+    }
+    loadDashboard();
+  }, []);
+
   const stats = [
-    { title: "Waiting Cases", value: "08", icon: "bi-hourglass-split", accent: "warning" },
-    { title: "Approved Today", value: "03", icon: "bi-check-circle", accent: "success" },
-    { title: "Conditional", value: "02", icon: "bi-exclamation-circle", accent: "info" },
-    { title: "Rejected", value: "01", icon: "bi-x-circle", accent: "danger" }
+    { title: "Waiting Cases", value: apps.filter(a => a.status !== "Approved").length.toString().padStart(2, "0"), icon: "bi-hourglass-split", accent: "warning" },
+    { title: "Approved Today", value: history.filter(h => h.decision === "APPROVE").length.toString().padStart(2, "0"), icon: "bi-check-circle", accent: "success" },
+    { title: "Conditional", value: history.filter(h => h.decision === "CONDITIONAL").length.toString().padStart(2, "0"), icon: "bi-exclamation-circle", accent: "info" },
+    { title: "Rejected", value: history.filter(h => h.decision === "REJECT").length.toString().padStart(2, "0"), icon: "bi-x-circle", accent: "danger" }
   ];
 
   return (
@@ -43,7 +60,7 @@ function UnderwriterDashboardHome() {
                   { key: "requestedLimit", label: "Requested Limit" },
                   { key: "status", label: "Status", type: "status" }
                 ]}
-                rows={applications.filter((item) => item.status !== "Approved")}
+                rows={apps.filter((item) => item.status !== "Approved")}
               />
             </div>
           </div>
@@ -60,7 +77,7 @@ function UnderwriterDashboardHome() {
                   { key: "approvedLimit", label: "Approved Limit" },
                   { key: "decisionDate", label: "Decision Date" }
                 ]}
-                rows={underwritingHistory}
+                rows={history}
               />
             </div>
           </div>

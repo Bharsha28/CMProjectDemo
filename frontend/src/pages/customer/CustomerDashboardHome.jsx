@@ -3,13 +3,12 @@ import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import StatCard from "../../components/StatCard";
 import DataTable from "../../components/DataTable";
-import { accounts, applications, cards, customerStats, payments, statements, transactions } from "../../data/mockData";
 import { customerApi } from "../../services/api";
 
 function CustomerDashboardHome() {
   const [customer, setCustomer] = useState(null);
-  const [cardRows, setCardRows] = useState(cards);
-  const [account, setAccount] = useState(accounts[0] || null);
+  const [cardRows, setCardRows] = useState([]);
+  const [account, setAccount] = useState(null);
   const [transactionRows, setTransactionRows] = useState([]);
   const [statementRows, setStatementRows] = useState([]);
   const [paymentRows, setPaymentRows] = useState([]);
@@ -31,8 +30,8 @@ function CustomerDashboardHome() {
           customerApi.getMyPayments()
         ]);
         
-        setCardRows(Array.isArray(myCards) ? myCards : cards);
-        setAccount(myAccount || accounts[0] || null);
+        setCardRows(Array.isArray(myCards) ? myCards : []);
+        setAccount(myAccount || null);
         setTransactionRows(Array.isArray(myTransactions) ? myTransactions : []);
         setStatementRows(Array.isArray(myStatements) ? myStatements : []);
         setPaymentRows(Array.isArray(myPayments) ? myPayments : []);
