@@ -204,7 +204,7 @@ function RegisterPage() {
                 </div>
               </form>
 
-              <p className="mt-4 mb-0 text-muted">
+              <p className="mt-1 mb-0 text-muted">
                 Already have an account? <Link to="/login">Go to login</Link>.
               </p>
             </div>

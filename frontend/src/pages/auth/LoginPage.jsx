@@ -171,7 +171,7 @@ function LoginPage() {
                 </div>
               </form>
 
-              <p className="mt-4 mb-0 text-muted">
+              <p className="mt-2 mb-0 text-muted">
                 Need an account? <Link to="/register">Create one here</Link>.
               </p>
             </div>

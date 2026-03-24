@@ -193,11 +193,11 @@ body {
 }
 
 .auth-status-container {
-  min-height: 85px; /* Slightly larger to be safe */
+  min-height: 40px; /* Further reduced to tighten the layout */
   display: flex;
   flex-direction: column;
   justify-content: start;
-  margin-top: 1rem;
+  margin-top: 0;
 }
 
 /* Ensure the alert doesn't add extra margin that pushes layout */
