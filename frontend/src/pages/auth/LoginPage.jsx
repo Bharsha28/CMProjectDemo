@@ -159,7 +159,7 @@ function LoginPage() {
                     </button>
                   </div>
                 </div>
-                <div className="col-12 d-flex justify-content-end">
+                <div className="col-12 d-flex justify-content-end mt-4">
                   <button className="btn btn-primary auth-submit-btn-minimized" disabled={loading}>
                     {loading ? "Logging in..." : "Login"}
                   </button>

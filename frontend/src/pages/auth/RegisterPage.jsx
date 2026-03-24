@@ -192,7 +192,7 @@ function RegisterPage() {
                     {passwordError && <div className="invalid-feedback w-100">{passwordError}</div>}
                   </div>
                 </div>
-                <div className="col-12 d-flex justify-content-end">
+                <div className="col-12 d-flex justify-content-end mt-4">
                   <button className="btn btn-primary auth-submit-btn-minimized" disabled={loading}>
                     {loading ? "Registering..." : "Create"}
                   </button>
