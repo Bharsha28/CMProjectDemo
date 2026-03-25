@@ -162,7 +162,8 @@ function CustomerWizardPage() {
       setMessage(customer?.customerId ? "Profile updated successfully!" : "Profile created! Proceed to card selection.");
       setStep(2);
     } catch (err) {
-      setError(err.message || "Failed to save profile. Please check if your phone/email is unique.");
+      console.error("Profile submit error:", err);
+      setError("Failed to save profile. Please ensure your email and phone number are unique.");
     } finally {
       setLoading(false);
     }
@@ -221,7 +222,8 @@ function CustomerWizardPage() {
       setAppForm(initialAppForm);
       customerApi.getMyApplications().then(setApplications).catch(() => {});
     } catch (err) {
-      setError(err.message || "Application submission failed.");
+      console.error("Application error:", err);
+      setError("Application submission failed. Please verify your details and try again.");
     } finally {
       setLoading(false);
     }
