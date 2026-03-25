@@ -363,6 +363,7 @@ body {
 
 .card {
   border-radius: 22px;
+  background-color: #ffffff !important;
 }
 
 @media (max-width: 991px) {
