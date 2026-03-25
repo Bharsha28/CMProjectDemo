@@ -48,7 +48,7 @@ function CustomerStatementsPage() {
             </div>
             <div className="col-auto align-self-end">
               <button className="btn btn-sm btn-primary" onClick={loadStatements}>
-                Filter
+                <i className="bi bi-search"></i>
               </button>
             </div>
           </div>

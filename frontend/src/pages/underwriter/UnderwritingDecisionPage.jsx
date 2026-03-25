@@ -87,22 +87,22 @@ function UnderwritingDecisionPage() {
     }));
   }
 
-  async function handleSubmit(event) {
-    if (event) event.preventDefault();
+  async function handleSubmit(decisionType) {
     setLoading(true);
     setError("");
     setMessage("");
 
     const payload = {
-      decision: formData.decision,
-      approvedLimit: Number(formData.approvedLimit)
+      decision: decisionType,
+      approvedLimit: decisionType === 'REJECT' ? 0 : Number(formData.approvedLimit)
     };
 
     try {
       await underwriterApi.createDecision(formData.applicationId, payload);
       const hData = await underwriterApi.getUnderwritingHistory();
       setHistory(hData || []);
-      setMessage("Decision saved successfully.");
+      setMessage(`${decisionType} decision saved successfully.`);
+      setFormData(f => ({ ...f, decision: decisionType }));
     } catch (submitError) {
       setError(submitError.message || "Unable to save the decision.");
     } finally {
@@ -148,36 +148,30 @@ function UnderwritingDecisionPage() {
                   />
                 </div>
 
-                <div className="col-12">
-                  <label className="form-label d-block">Set Decision</label>
-                  <div className="btn-group w-100" role="group">
-                    <button 
-                      type="button" 
-                      className={`btn ${formData.decision === 'APPROVE' ? 'btn-success' : 'btn-outline-success'}`}
-                      onClick={() => autoCalculate(formData.applicationId, "APPROVE", applicationList, scores, products)}
-                    >
-                      Approve
-                    </button>
-                    <button 
-                      type="button" 
-                      className={`btn ${formData.decision === 'CONDITIONAL' ? 'btn-info text-white' : 'btn-outline-info'}`}
-                      onClick={() => autoCalculate(formData.applicationId, "CONDITIONAL", applicationList, scores, products)}
-                    >
-                      Conditional
-                    </button>
-                    <button 
-                      type="button" 
-                      className={`btn ${formData.decision === 'REJECT' ? 'btn-danger' : 'btn-outline-danger'}`}
-                      onClick={() => autoCalculate(formData.applicationId, "REJECT", applicationList, scores, products)}
-                    >
-                      Reject
-                    </button>
-                  </div>
-                </div>
-
-                <div className="col-12 d-flex justify-content-end mt-4">
-                  <button className="btn btn-primary px-5" onClick={handleSubmit} disabled={loading}>
-                    {loading ? "Saving..." : "Save"}
+                <div className="col-12 d-flex justify-content-end gap-3 mt-4">
+                  <button 
+                    type="button" 
+                    className="btn btn-success px-4" 
+                    onClick={() => handleSubmit('APPROVE')} 
+                    disabled={loading}
+                  >
+                    {loading ? "Saving..." : "Approve"}
+                  </button>
+                  <button 
+                    type="button" 
+                    className="btn btn-info text-white px-4" 
+                    onClick={() => handleSubmit('CONDITIONAL')} 
+                    disabled={loading}
+                  >
+                    {loading ? "Saving..." : "Conditional"}
+                  </button>
+                  <button 
+                    type="button" 
+                    className="btn btn-danger px-4" 
+                    onClick={() => handleSubmit('REJECT')} 
+                    disabled={loading}
+                  >
+                    {loading ? "Saving..." : "Reject"}
                   </button>
                 </div>
               </div>
