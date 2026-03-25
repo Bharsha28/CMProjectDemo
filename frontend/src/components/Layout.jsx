@@ -83,11 +83,10 @@ function Layout({ section, title, children }) {
           {session && (
             <div className="d-flex align-items-center gap-3">
               <div className="text-end d-none d-md-block">
-                <div className="small text-muted fw-semibold">{session.name || "User"}</div>
-                <div className="small text-muted" style={{ fontSize: '0.75rem' }}>{session.email}</div>
+                <div className="small text-muted fw-semibold">{session.name && session.name !== session.email ? session.name : session.email || "User"}</div>
               </div>
               <button
-                className="btn btn-sm btn-outline-danger"
+                className="btn btn-sm btn-outline-primary"
                 onClick={async () => {
                   const logoutName = session?.name || session?.email || "User";
                   try {
