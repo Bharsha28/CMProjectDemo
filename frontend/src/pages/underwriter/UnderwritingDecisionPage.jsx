@@ -148,10 +148,10 @@ function UnderwritingDecisionPage() {
                   />
                 </div>
 
-                <div className="col-12 d-flex justify-content-end gap-3 mt-4">
+                <div className="col-12 d-flex justify-content-end flex-wrap gap-3 mt-4">
                   <button 
                     type="button" 
-                    className="btn btn-success px-4" 
+                    className="btn btn-primary auth-submit-btn-minimized w-auto px-4" 
                     onClick={() => handleSubmit('APPROVE')} 
                     disabled={loading}
                   >
@@ -159,7 +159,7 @@ function UnderwritingDecisionPage() {
                   </button>
                   <button 
                     type="button" 
-                    className="btn btn-info text-white px-4" 
+                    className="btn btn-primary auth-submit-btn-minimized w-auto px-4" 
                     onClick={() => handleSubmit('CONDITIONAL')} 
                     disabled={loading}
                   >
@@ -167,7 +167,7 @@ function UnderwritingDecisionPage() {
                   </button>
                   <button 
                     type="button" 
-                    className="btn btn-danger px-4" 
+                    className="btn btn-primary auth-submit-btn-minimized w-auto px-4" 
                     onClick={() => handleSubmit('REJECT')} 
                     disabled={loading}
                   >

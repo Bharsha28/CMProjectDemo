@@ -98,8 +98,8 @@ function CreditScorePage() {
                     required 
                   />
                 </div>
-                <div className="col-md-3">
-                  <button className="btn btn-primary w-100" disabled={loading}>
+                <div className="col-md-3 d-flex align-items-end">
+                  <button className="btn btn-primary px-4" disabled={loading}>
                     {loading ? "Generating..." : "Generate"}
                   </button>
                 </div>
