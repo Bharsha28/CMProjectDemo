@@ -65,7 +65,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/scores/**").hasRole("UNDERWRITER")
                 .requestMatchers("/api/decisions/**").hasRole("UNDERWRITER")
                 .requestMatchers("/api/applications/*/scores", "/api/applications/*/decisions").hasRole("UNDERWRITER")
-                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/applications").hasRole("UNDERWRITER")
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/applications").hasAnyRole("UNDERWRITER", "OFFICER", "ADMIN")
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/documents/**").hasAnyRole("UNDERWRITER", "OFFICER")
 
                 // Operations Specialized
