@@ -41,6 +41,14 @@ public class StatementMapper {
         dto.setMinimumDue(st.getMinimumDue());
         dto.setGeneratedDate(st.getGeneratedDate());
         dto.setStatus(st.getStatus());
+        
+        if (st.getAccount() != null && st.getAccount().getCard() != null && st.getAccount().getCard().getCustomer() != null) {
+            dto.setCustomerName(st.getAccount().getCard().getCustomer().getName());
+            if (st.getAccount().getCard().getCustomer().getContactInfo() != null) {
+                dto.setCustomerEmail(st.getAccount().getCard().getCustomer().getContactInfo().getEmail());
+            }
+        }
+        
         return dto;
     }
 }

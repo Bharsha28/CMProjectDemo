@@ -39,7 +39,7 @@ function PaymentsListPage() {
             columns={[
               { key: "paymentId", label: "Payment ID" },
               { key: "accountId", label: "Account" },
-              { key: "customerEmail", label: "Customer Email" },
+              { key: "customerName", label: "Customer Name" },
               { key: "amount", label: "Amount", render: (row) => `$${Number(row.amount || 0).toLocaleString()}` },
               { key: "method", label: "Method" },
               { key: "paymentDate", label: "Date" },

@@ -46,6 +46,14 @@ public class PaymentMapper {
         dto.setPaymentDate(p.getPaymentDate());
         dto.setMethod(p.getMethod());
         dto.setStatus(p.getStatus());
+        
+        if (p.getAccount() != null && p.getAccount().getCard() != null && p.getAccount().getCard().getCustomer() != null) {
+            dto.setCustomerName(p.getAccount().getCard().getCustomer().getName());
+            if (p.getAccount().getCard().getCustomer().getContactInfo() != null) {
+                dto.setCustomerEmail(p.getAccount().getCard().getCustomer().getContactInfo().getEmail());
+            }
+        }
+        
         return dto;
     }
 }

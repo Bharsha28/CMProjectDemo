@@ -128,8 +128,7 @@ function StatementsListPage() {
             columns={[
               { key: "statementId", label: "Statement ID" },
               { key: "accountId", label: "Account ID" },
-              { key: "customerName", label: "Customer" },
-              { key: "customerEmail", label: "Customer Email" },
+              { key: "customerName", label: "Customer Name" },
               { key: "totalDue", label: "Total Due", render: (row) => `$${Number(row.totalDue || 0).toLocaleString()}` },
               { key: "minimumDue", label: "Min Due", render: (row) => `$${Number(row.minimumDue || 0).toLocaleString()}` },
               { key: "generatedDate", label: "Generated Date" },

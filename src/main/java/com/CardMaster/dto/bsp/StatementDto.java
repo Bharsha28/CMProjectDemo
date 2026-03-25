@@ -25,4 +25,6 @@ public class StatementDto {
     private Double minimumDue;
     private LocalDate generatedDate;
     private StatementStatus status;
+    private String customerName;
+    private String customerEmail;
 }

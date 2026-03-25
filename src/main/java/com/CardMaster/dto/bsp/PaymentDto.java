@@ -21,4 +21,6 @@ public class PaymentDto {
     private LocalDateTime paymentDate;
     private PaymentMethod method;
     private PaymentStatus status;
+    private String customerName;
+    private String customerEmail;
 }

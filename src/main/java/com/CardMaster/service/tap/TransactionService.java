@@ -26,6 +26,7 @@ public class TransactionService {
     private final TransactionRepository transactionRepo;
     private final TransactionHoldRepository holdRepo;
     private final CardAccountRepository accountRepo;
+    private final com.CardMaster.dao.bsp.StatementRepository statementRepo;
 
     /**
      * AUTHORIZE a transaction (create a hold + set status).
@@ -90,6 +91,17 @@ public class TransactionService {
         tx.setStatus(TransactionStatus.POSTED);
         tx = transactionRepo.save(tx);
 
+        // SYNC BALANCE WITH STATEMENT
+        com.CardMaster.model.bsp.Statement statement = statementRepo
+                .findFirstByAccount_AccountIdAndStatusOrderByGeneratedDateDesc(tx.getAccount().getAccountId(), com.CardMaster.Enum.bsp.StatementStatus.OPEN)
+                .orElse(null);
+
+        if (statement != null) {
+            statement.setTotalDue(statement.getTotalDue() + tx.getAmount());
+            statement.setMinimumDue(statement.getMinimumDue() + (tx.getAmount() * 0.05)); // 5% minimum payment rule
+            statementRepo.save(statement);
+        }
+
         // Convert Entity → DTO manually (beginner-friendly)
        TransactionDto dto =
                 new com.CardMaster.dto.tap.TransactionDto(
@@ -132,6 +144,17 @@ public class TransactionService {
         CardAccount account = tx.getAccount();
         account.setAvailableLimit(Math.min(account.getCreditLimit(), account.getAvailableLimit() + tx.getAmount()));
         accountRepo.save(account);
+
+        // REMOVE BALANCE FROM STATEMENT
+        com.CardMaster.model.bsp.Statement statement = statementRepo
+                .findFirstByAccount_AccountIdAndStatusOrderByGeneratedDateDesc(account.getAccountId(), com.CardMaster.Enum.bsp.StatementStatus.OPEN)
+                .orElse(null);
+
+        if (statement != null) {
+            statement.setTotalDue(Math.max(0.0, statement.getTotalDue() - tx.getAmount()));
+            statement.setMinimumDue(Math.max(0.0, statement.getMinimumDue() - (tx.getAmount() * 0.05)));
+            statementRepo.save(statement);
+        }
 
         return transactionRepo.save(tx);
     }

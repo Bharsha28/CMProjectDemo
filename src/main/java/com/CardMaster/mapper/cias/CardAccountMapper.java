@@ -19,6 +19,9 @@ public class CardAccountMapper {
             dto.setCardId(account.getCard().getCardId());
             if (account.getCard().getApplication() != null) {
                 dto.setApplicationId(account.getCard().getApplication().getApplicationId());
+                if (account.getCard().getApplication().getProduct() != null) {
+                    dto.setCardProductName(account.getCard().getApplication().getProduct().getName());
+                }
             }
             if (account.getCard().getCustomer() != null) {
                 dto.setCustomerName(account.getCard().getCustomer().getName());

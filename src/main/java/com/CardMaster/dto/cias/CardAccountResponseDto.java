@@ -22,5 +22,6 @@ public class CardAccountResponseDto {
     private Double availableLimit;
     private LocalDate openDate;
     private String status; // ACTIVE, CLOSED
+    private String cardProductName;
 
 }
