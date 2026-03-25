@@ -61,7 +61,7 @@ function CustomerTransactionsPage() {
         channel: formData.channel
       });
       setRows((current) => [created, ...current]);
-      setMessage("Transaction authorized successfully.");
+      setMessage("transaction completed successfully");
       setFormData(initialForm);
     } catch (submitError) {
       setError(submitError.message || "Transaction authorization failed.");
