@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
 import { customerApi } from "../../services/api";
 
 function CustomerStatementsPage() {
+  const navigate = useNavigate();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -65,7 +67,7 @@ function CustomerStatementsPage() {
                 key: "actions",
                 label: "Actions",
                 render: (row) => row.status === "CLOSED" ? <span className="text-muted small fw-bold">Settled</span> : (
-                    <button className="btn btn-sm btn-outline-primary" onClick={() => window.location.href='/customer/payments'}>
+                    <button className="btn btn-sm btn-outline-primary" onClick={() => navigate('/customer/payments', { state: { amount: row.totalDue } })}>
                         Pay Now
                     </button>
                 )

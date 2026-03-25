@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Layout from "../../components/Layout";
 import PageHeader from "../../components/PageHeader";
 import DataTable from "../../components/DataTable";
 import { customerApi } from "../../services/api";
 
 function CustomerPaymentsPage() {
+  const location = useLocation();
+  const prefillAmount = location.state?.amount || "";
+
   const [rows, setRows] = useState([]);
   const [account, setAccount] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,7 +17,7 @@ function CustomerPaymentsPage() {
   const [message, setMessage] = useState("");
 
   const [paymentForm, setPaymentForm] = useState({
-    amount: "",
+    amount: prefillAmount,
     paymentMethod: "NETBANKING", // Changed from BankTransfer
     reference: ""
   });
