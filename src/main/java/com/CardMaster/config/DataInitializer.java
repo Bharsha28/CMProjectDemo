@@ -97,7 +97,8 @@ public class DataInitializer implements CommandLineRunner {
     private final com.CardMaster.dao.bsp.PaymentRepository paymentRepository;
 
     private void seedSampleBillingData() {
-        if (transactionRepository.count() > 0) return;
+        if (transactionRepository.count() > 0)
+            return;
 
         userRepository.findByEmail("customer1@gmail.com").ifPresent(user -> {
             cardAccountRepository.findByCardCustomerContactInfoEmail(user.getEmail()).ifPresent(account -> {
@@ -153,7 +154,8 @@ public class DataInitializer implements CommandLineRunner {
                 p.setStatus(com.CardMaster.Enum.bsp.PaymentStatus.COMPLETED);
                 paymentRepository.save(p);
 
-                // 4. Update Account Balance (availableLimit = creditLimit - posted - authorized + payments)
+                // 4. Update Account Balance (availableLimit = creditLimit - posted - authorized
+                // + payments)
                 // 10000 - 120 - 50 - 30 + 50 = 9850
                 account.setAvailableLimit(account.getCreditLimit() - 170.0 - 30.0 + 50.0);
                 cardAccountRepository.save(account);

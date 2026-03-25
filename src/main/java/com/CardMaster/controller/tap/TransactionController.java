@@ -37,7 +37,7 @@ public class TransactionController {
      * Post (capture) a previously authorized transaction by its ID.
      */
     @PostMapping("/post/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','OFFICER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN','OFFICER')")
     public ResponseEntity<TransactionDto> post(@PathVariable("id") Long id) {
         TransactionDto posted = service.post(id);
         return ResponseEntity.ok(posted);
@@ -47,7 +47,7 @@ public class TransactionController {
      * Reverse a transaction (void an auth or reverse a posted transaction).
      */
     @PostMapping("/reverse/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN','OFFICER','RISK')")
+    @PreAuthorize("hasAnyRole('CUSTOMER','ADMIN','OFFICER','RISK')")
     public ResponseEntity<TransactionDto> reverse(@PathVariable("id") Long id) {
         Transaction reversed = service.reverse(id);
         return ResponseEntity.ok(mapper.toDTO(reversed));

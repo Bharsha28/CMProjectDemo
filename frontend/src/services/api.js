@@ -118,7 +118,16 @@ export const customerApi = {
     return unwrapResponse(await fetchJson("/api/billing/payments/my"));
   },
   capturePayment: (payload) =>
-    fetchJson("/api/billing/payments/capture", { method: "POST", body: JSON.stringify(payload) })
+    fetchJson("/api/billing/payments/capture", { method: "POST", body: JSON.stringify(payload) }),
+  authorizeTransaction: (payload) =>
+    fetchJson("/api/transactions/authorize", {
+      method: "POST",
+      body: JSON.stringify(payload)
+    }),
+  postTransaction: (transactionId) =>
+    fetchJson(`/api/transactions/post/${transactionId}`, { method: "POST" }),
+  reverseTransaction: (transactionId) =>
+    fetchJson(`/api/transactions/reverse/${transactionId}`, { method: "POST" })
 };
 
 export const underwriterApi = {
