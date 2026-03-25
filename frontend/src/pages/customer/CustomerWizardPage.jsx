@@ -249,7 +249,7 @@ function CustomerWizardPage() {
 
       <div className="row g-4">
         <div className="col-lg-8">
-          <div className="card border-0 shadow-sm mb-4">
+          <div className="card border-0 shadow-sm mb-4 bg-dark text-white">
             <div className="card-body p-4">
               <h5 className="mb-4 d-flex align-items-center">
                 <span className={`badge ${step === 1 ? 'bg-primary' : 'bg-success'} me-2`}>{step === 1 ? "1" : "2"}</span>
@@ -294,7 +294,7 @@ function CustomerWizardPage() {
                       <textarea className="form-control" name="address" rows="2" value={customerForm.address} onChange={handleCustomerChange} required />
                     </div>
                     <div className="col-12">
-                      <button className="btn btn-primary" disabled={loading}>
+                      <button className="btn btn-primary auth-submit-btn-minimized px-4 w-auto" disabled={loading}>
                         {loading ? "Saving..." : (customer?.customerId ? "Update & Proceed" : "Register & Continue")}
                       </button>
                     </div>
@@ -326,8 +326,8 @@ function CustomerWizardPage() {
                       <input type="file" className="form-control" name="file" accept=".pdf" onChange={handleFileChange} required />
                     </div>
                     <div className="col-12 mt-3 d-flex justify-content-end align-items-center gap-2">
-                      <button type="button" className="btn btn-link link-secondary me-auto" onClick={() => setStep(1)} disabled={loading}>Edit Profile</button>
-                      <button className="btn btn-success px-4" disabled={loading}>
+                      <button type="button" className="btn btn-link link-light me-auto" onClick={() => setStep(1)} disabled={loading}>Edit Profile</button>
+                      <button className="btn btn-primary auth-submit-btn-minimized px-4 w-auto" disabled={loading}>
                         {loading ? "Submitting..." : "Submit"}
                       </button>
                     </div>

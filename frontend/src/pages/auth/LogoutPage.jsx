@@ -8,10 +8,10 @@ function LogoutPage() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate("/login", { replace: true });
+      window.location.href = "/login";
     }, 3000);
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, []);
 
   return (
     <div className="auth-shell">
@@ -53,9 +53,9 @@ function LogoutPage() {
               <div className="alert alert-success mb-4 text-start">{message}</div>
               <p className="text-muted mb-4">You will be redirected to the login page shortly, or you can return immediately.</p>
               <div className="d-flex justify-content-end">
-                <Link to="/login" className="btn btn-primary auth-submit-btn-minimized">
+                <a href="/login" className="btn btn-primary auth-submit-btn-minimized">
                   Back To Login
-                </Link>
+                </a>
               </div>
             </div>
           </div>

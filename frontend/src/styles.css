@@ -207,7 +207,9 @@ body {
 }
 
 .invalid-feedback {
-  display: block; /* Always reserve space if possible or use absolute positioning */
+  position: absolute;
+  top: 100%;
+  left: 0.75rem;
   min-height: 18px;
   font-size: 0.78rem;
   font-weight: 500;
