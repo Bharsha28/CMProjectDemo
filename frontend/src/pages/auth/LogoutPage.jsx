@@ -52,9 +52,11 @@ function LogoutPage() {
               <h2 className="h3 fw-bold mb-3">Logout</h2>
               <div className="alert alert-success mb-4 text-start">{message}</div>
               <p className="text-muted mb-4">You will be redirected to the login page shortly, or you can return immediately.</p>
-              <Link to="/login" className="btn btn-primary auth-submit-btn-minimized w-100">
-                Back To Login
-              </Link>
+              <div className="d-flex justify-content-end">
+                <Link to="/login" className="btn btn-primary auth-submit-btn-minimized">
+                  Back To Login
+                </Link>
+              </div>
             </div>
           </div>
         </div>

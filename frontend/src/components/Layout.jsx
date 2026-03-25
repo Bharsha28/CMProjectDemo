@@ -86,7 +86,7 @@ function Layout({ section, title, children }) {
                 <div className="small text-muted fw-semibold">{session.name && session.name !== session.email ? session.name : session.email || "User"}</div>
               </div>
               <button
-                className="btn btn-sm btn-outline-primary"
+                className="btn btn-primary auth-submit-btn-minimized"
                 onClick={async () => {
                   const logoutName = session?.name || session?.email || "User";
                   try {
