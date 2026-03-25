@@ -77,8 +77,22 @@ function RegisterPage() {
       setFormData(initialForm);
       setTimeout(() => navigate("/login", { replace: true }), 1200);
     } catch (submitError) {
-      const msg = submitError.message || "";
-      setError(msg.includes("SQL") || msg.length > 60 ? "Registration failed. User may already exist." : msg || "Registration failed.");
+      const msg = (submitError.message || "").toLowerCase();
+      let parsedError = "Registration failed. Please check your details.";
+      
+      if (msg.includes("duplicate")) {
+        if (msg.includes("phone")) {
+          parsedError = "This phone number is already registered.";
+        } else if (msg.includes("email")) {
+          parsedError = "This email address is already registered.";
+        } else {
+          parsedError = "Registration failed. User may already exist.";
+        }
+      } else if (msg.length < 60 && !msg.includes("sql")) {
+        parsedError = submitError.message;
+      }
+      
+      setError(parsedError);
     } finally {
       setLoading(false);
     }
