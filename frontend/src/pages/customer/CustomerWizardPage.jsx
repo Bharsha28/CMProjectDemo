@@ -249,7 +249,7 @@ function CustomerWizardPage() {
 
       <div className="row g-4">
         <div className="col-lg-8">
-          <div className="card border-0 shadow-sm mb-4 bg-dark text-white">
+          <div className="card border-0 shadow-sm mb-4">
             <div className="card-body p-4">
               <h5 className="mb-4 d-flex align-items-center">
                 <span className={`badge ${step === 1 ? 'bg-primary' : 'bg-success'} me-2`}>{step === 1 ? "1" : "2"}</span>

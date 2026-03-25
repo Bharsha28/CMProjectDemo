@@ -365,7 +365,7 @@ body {
 
 .card {
   border-radius: 22px;
-  background-color: #ffffff !important;
+  background-color: #ffffff;
 }
 
 @media (max-width: 991px) {

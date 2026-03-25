@@ -38,7 +38,54 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/**").permitAll()
+                .requestMatchers("/api/users/login", "/api/users/register").permitAll()
+                
+                // Admin Modules
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/users/**").hasRole("ADMIN")
+                .requestMatchers("/api/fees/**").hasRole("ADMIN")
+                .requestMatchers("/api/auditlogs/**").hasRole("ADMIN")
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/products/**").hasRole("ADMIN")
+                .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/products/**").hasRole("ADMIN")
+                .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
+
+                // Customer Specialized Endpoints (Specific before General)
+                .requestMatchers("/api/customers/my", "/api/customers").hasRole("CUSTOMER")
+                .requestMatchers("/api/applications/my", "/api/applications/customer/**").hasRole("CUSTOMER")
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/applications").hasRole("CUSTOMER")
+                .requestMatchers("/api/cards/my").hasRole("CUSTOMER")
+                .requestMatchers("/api/accounts/my").hasRole("CUSTOMER")
+                .requestMatchers("/api/transactions/my").hasRole("CUSTOMER")
+                .requestMatchers("/api/billing/statements/my").hasRole("CUSTOMER")
+                .requestMatchers("/api/billing/payments/my").hasRole("CUSTOMER")
+                .requestMatchers("/api/documents/upload").hasRole("CUSTOMER")
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/documents").hasRole("CUSTOMER")
+
+                // Underwriter Modules
+                .requestMatchers("/api/scores/**").hasRole("UNDERWRITER")
+                .requestMatchers("/api/decisions/**").hasRole("UNDERWRITER")
+                .requestMatchers("/api/applications/*/scores", "/api/applications/*/decisions").hasRole("UNDERWRITER")
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/applications").hasRole("UNDERWRITER")
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/documents/**").hasAnyRole("UNDERWRITER", "OFFICER", "RISK")
+
+                // Operations Specialized
+                .requestMatchers("/api/transactions/recent").hasRole("ADMIN")
+                .requestMatchers("/api/transactions/authorize", "/api/transactions/post/**", "/api/transactions/reverse/**").hasAnyRole("OFFICER", "RISK", "ADMIN")
+                .requestMatchers("/api/billing/statements/generate", "/api/billing/statements/close/**").hasAnyRole("OFFICER", "RISK")
+                .requestMatchers("/api/billing/payments/capture").hasAnyRole("CUSTOMER", "OFFICER", "RISK")
+                
+                // Operations General Collections
+                .requestMatchers("/api/cards", "/api/cards/").hasAnyRole("OFFICER", "RISK")
+                .requestMatchers("/api/accounts", "/api/accounts/").hasAnyRole("OFFICER", "RISK")
+                .requestMatchers("/api/transactions", "/api/transactions/").hasAnyRole("OFFICER", "RISK")
+                .requestMatchers("/api/billing/statements", "/api/billing/statements/").hasAnyRole("OFFICER", "RISK")
+                .requestMatchers("/api/billing/payments", "/api/billing/payments/").hasAnyRole("OFFICER", "RISK")
+
+                // Shared Read-Only
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products").permitAll()
+
+                // Default Guard
+                .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
