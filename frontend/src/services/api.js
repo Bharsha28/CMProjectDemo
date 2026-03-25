@@ -42,7 +42,7 @@ async function fetchJson(path, options = {}) {
 
     try {
       const errorPayload = await response.json();
-      errorMessage = errorPayload?.msg || errorPayload?.message || errorMessage;
+      errorMessage = errorPayload?.msg || errorPayload?.message || errorPayload?.error || errorMessage;
     } catch (error) {
       errorMessage = `${errorMessage} (${response.status})`;
     }
