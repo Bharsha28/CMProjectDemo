@@ -138,8 +138,8 @@ public class DataInitializer implements CommandLineRunner {
                 st.setAccount(account);
                 st.setPeriodStart(java.time.LocalDate.now().minusMonths(1));
                 st.setPeriodEnd(java.time.LocalDate.now());
-                st.setTotalDue(170.0);
-                st.setMinimumDue(25.0);
+                st.setTotalDue(120.0); // 170 initial - 50 payment
+                st.setMinimumDue(0.0);  // 50 payment covered the 25 minimum
                 st.setGeneratedDate(java.time.LocalDate.now());
                 st.setStatus(com.CardMaster.Enum.bsp.StatementStatus.OPEN);
                 com.CardMaster.model.bsp.Statement savedStatement = statementRepository.save(st);
