@@ -119,9 +119,9 @@ function CustomerDashboardHome() {
                  <div className="p-3">
                    <DataTable 
                     columns={[
-                      { key: "statementDate", label: "Date" },
-                      { key: "totalDue", label: "Due" },
-                      { key: "dueDate", label: "Until" },
+                      { key: "periodEnd", label: "Date" },
+                      { key: "totalDue", label: "Due", render: (row) => `$${Number(row.totalDue || 0).toLocaleString()}` },
+                      { key: "generatedDate", label: "Until" },
                       { key: "status", label: "Status", type: "status" }
                     ]} 
                     rows={statementRows} 
