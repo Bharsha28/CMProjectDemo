@@ -16,6 +16,7 @@ public class CardResponseDto {
         private Long applicationId;
         private Long customerId;
         private Long productId;
+        private String cardProductName;
         private String customerName;
         private String customerEmail;
         private String maskedCardNumber;

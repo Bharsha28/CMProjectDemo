@@ -27,6 +27,7 @@ public class CardMapper {
         
         if (card.getProduct() != null) {
             dto.setProductId(card.getProduct().getProductId());
+            dto.setCardProductName(card.getProduct().getName());
         }
         
         dto.setMaskedCardNumber(card.getMaskedCardNumber());

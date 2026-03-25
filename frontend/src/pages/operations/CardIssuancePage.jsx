@@ -29,7 +29,7 @@ function CardIssuancePage() {
         ]);
         setCardRows(cData);
         setApplicationList(aData);
-        const approved = aData.find(a => a.status === "APPROVED");
+        const approved = aData.find(a => a.status === "Approved");
         if (approved) {
            setFormData(f => ({...f, applicationId: String(approved.applicationId)}));
         }
@@ -143,7 +143,7 @@ function CardIssuancePage() {
           <DataTable
             columns={[
               { key: "customerName", label: "Customer" },
-              { key: "cardProductName", label: "Product", render: (row) => row.cardProductName || "-" },
+              { key: "cardProductName", label: "Product", render: (row) => row.cardProductName || row.productName || "-" },
               { key: "expiryDate", label: "Expiry" },
               { key: "status", label: "Status", type: "status" }
             ]}
