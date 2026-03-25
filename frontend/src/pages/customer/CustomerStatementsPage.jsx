@@ -64,7 +64,7 @@ function CustomerStatementsPage() {
               {
                 key: "actions",
                 label: "Actions",
-                render: (row) => (
+                render: (row) => row.status === "CLOSED" ? <span className="text-muted small fw-bold">Settled</span> : (
                     <button className="btn btn-sm btn-outline-primary" onClick={() => window.location.href='/customer/payments'}>
                         Pay Now
                     </button>
