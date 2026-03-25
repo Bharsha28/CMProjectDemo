@@ -21,7 +21,8 @@ import com.CardMaster.model.cias.Card;
 @AllArgsConstructor
 public class Customer {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customer_seq")
+    @SequenceGenerator(name = "customer_seq", sequenceName = "customer_seq", initialValue = 100000, allocationSize = 1)
     private Long customerId;
 
     @NotBlank

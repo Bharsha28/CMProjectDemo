@@ -24,7 +24,8 @@ import com.CardMaster.model.tap.Transaction;
 public class CardAccount {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_seq")
+    @SequenceGenerator(name = "account_seq", sequenceName = "account_seq", initialValue = 400000, allocationSize = 1)
     @Column(name = "account_id")
     private Long accountId;
 

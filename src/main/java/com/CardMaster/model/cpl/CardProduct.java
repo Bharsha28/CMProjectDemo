@@ -21,7 +21,8 @@ import com.CardMaster.model.paa.CardApplication;
 public class CardProduct {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_seq")
+    @SequenceGenerator(name = "product_seq", sequenceName = "product_seq", initialValue = 200000, allocationSize = 1)
     private Long productId; // Use Long (wrapper) for nullability with JPA
 
     @NotBlank

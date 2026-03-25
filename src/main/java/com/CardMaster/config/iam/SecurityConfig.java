@@ -66,20 +66,20 @@ public class SecurityConfig {
                 .requestMatchers("/api/decisions/**").hasRole("UNDERWRITER")
                 .requestMatchers("/api/applications/*/scores", "/api/applications/*/decisions").hasRole("UNDERWRITER")
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/applications").hasRole("UNDERWRITER")
-                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/documents/**").hasAnyRole("UNDERWRITER", "OFFICER", "RISK")
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/documents/**").hasAnyRole("UNDERWRITER", "OFFICER")
 
                 // Operations Specialized
                 .requestMatchers("/api/transactions/recent").hasRole("ADMIN")
-                .requestMatchers("/api/transactions/authorize", "/api/transactions/post/**", "/api/transactions/reverse/**").hasAnyRole("OFFICER", "RISK", "ADMIN")
-                .requestMatchers("/api/billing/statements/generate", "/api/billing/statements/close/**").hasAnyRole("OFFICER", "RISK")
-                .requestMatchers("/api/billing/payments/capture").hasAnyRole("CUSTOMER", "OFFICER", "RISK")
+                .requestMatchers("/api/transactions/authorize", "/api/transactions/post/**", "/api/transactions/reverse/**").hasAnyRole("OFFICER", "ADMIN")
+                .requestMatchers("/api/billing/statements/generate", "/api/billing/statements/close/**").hasRole("OFFICER")
+                .requestMatchers("/api/billing/payments/capture").hasAnyRole("CUSTOMER", "OFFICER")
                 
                 // Operations General Collections
-                .requestMatchers("/api/cards", "/api/cards/").hasAnyRole("OFFICER", "RISK")
-                .requestMatchers("/api/accounts", "/api/accounts/").hasAnyRole("OFFICER", "RISK")
-                .requestMatchers("/api/transactions", "/api/transactions/").hasAnyRole("OFFICER", "RISK")
-                .requestMatchers("/api/billing/statements", "/api/billing/statements/").hasAnyRole("OFFICER", "RISK")
-                .requestMatchers("/api/billing/payments", "/api/billing/payments/").hasAnyRole("OFFICER", "RISK")
+                .requestMatchers("/api/cards", "/api/cards/").hasRole("OFFICER")
+                .requestMatchers("/api/accounts", "/api/accounts/").hasRole("OFFICER")
+                .requestMatchers("/api/transactions", "/api/transactions/").hasRole("OFFICER")
+                .requestMatchers("/api/billing/statements", "/api/billing/statements/").hasRole("OFFICER")
+                .requestMatchers("/api/billing/payments", "/api/billing/payments/").hasRole("OFFICER")
 
                 // Shared Read-Only
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/products").permitAll()

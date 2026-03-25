@@ -293,7 +293,7 @@ function CustomerWizardPage() {
                       <label className="form-label">Address</label>
                       <textarea className="form-control" name="address" rows="2" value={customerForm.address} onChange={handleCustomerChange} required />
                     </div>
-                    <div className="col-12">
+                    <div className="col-12 d-flex justify-content-end mt-3">
                       <button className="btn btn-primary auth-submit-btn-minimized px-4 w-auto" disabled={loading}>
                         {loading ? "Saving..." : (customer?.customerId ? "Update & Proceed" : "Register & Continue")}
                       </button>
@@ -326,7 +326,7 @@ function CustomerWizardPage() {
                       <input type="file" className="form-control" name="file" accept=".pdf" onChange={handleFileChange} required />
                     </div>
                     <div className="col-12 mt-3 d-flex justify-content-end align-items-center gap-2">
-                      <button type="button" className="btn btn-link link-light me-auto" onClick={() => setStep(1)} disabled={loading}>Edit Profile</button>
+                      <button type="button" className="btn btn-primary auth-submit-btn-minimized w-auto px-4 me-auto" onClick={() => setStep(1)} disabled={loading}>Edit Profile</button>
                       <button className="btn btn-primary auth-submit-btn-minimized px-4 w-auto" disabled={loading}>
                         {loading ? "Submitting..." : "Submit"}
                       </button>

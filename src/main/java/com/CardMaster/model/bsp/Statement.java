@@ -14,7 +14,8 @@ import java.util.List;
 @Data
 public class Statement {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "stmt_seq")
+    @SequenceGenerator(name = "stmt_seq", sequenceName = "stmt_seq", initialValue = 700000, allocationSize = 1)
     private Long statementId;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -21,7 +21,8 @@ import com.CardMaster.model.cau.CreditScore;
 @AllArgsConstructor
 public class CardApplication {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "app_seq")
+    @SequenceGenerator(name = "app_seq", sequenceName = "app_seq", initialValue = 300000, allocationSize = 1)
     private Long applicationId;
 
     @ManyToOne

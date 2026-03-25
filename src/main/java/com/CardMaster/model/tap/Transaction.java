@@ -15,7 +15,8 @@ import java.util.List;
 @Data
 public class Transaction {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "trx_seq")
+    @SequenceGenerator(name = "trx_seq", sequenceName = "trx_seq", initialValue = 600000, allocationSize = 1)
     private Long transactionId;
 
     @ManyToOne
