@@ -77,7 +77,8 @@ function RegisterPage() {
       setFormData(initialForm);
       setTimeout(() => navigate("/login", { replace: true }), 1200);
     } catch (submitError) {
-      setError(submitError.message || "Registration failed.");
+      const msg = submitError.message || "";
+      setError(msg.includes("SQL") || msg.length > 60 ? "Registration failed. User may already exist." : msg || "Registration failed.");
     } finally {
       setLoading(false);
     }
@@ -192,9 +193,9 @@ function RegisterPage() {
                     {passwordError && <div className="invalid-feedback w-100">{passwordError}</div>}
                   </div>
                 </div>
-                <div className="auth-status-container">
-                  {message ? <div className="alert alert-success mt-4 mb-0">{message}</div> : null}
-                  {error ? <div className="alert alert-danger mt-4 mb-0">{error}</div> : null}
+                <div className="auth-status-container" style={{ minHeight: "60px" }}>
+                  {message ? <div className="alert alert-success mt-4 mb-0 text-truncate" title={message}>{message}</div> : null}
+                  {error ? <div className="alert alert-danger mt-4 mb-0 text-truncate" title={error}>{error}</div> : null}
                 </div>
 
                 <div className="col-12 d-flex justify-content-end">

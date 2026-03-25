@@ -102,7 +102,7 @@ function CustomerTransactionsPage() {
             </div>
             <div className="col-12 text-end pt-2">
               <button className="btn btn-primary px-5" disabled={loading || !account}>
-                {loading ? "Processing..." : "Authorize Transaction"}
+                {loading ? "Processing..." : "Confirm"}
               </button>
             </div>
           </form>

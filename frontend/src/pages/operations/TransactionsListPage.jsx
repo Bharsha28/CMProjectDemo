@@ -84,24 +84,28 @@ function TransactionsListPage() {
               {
                 key: "actions",
                 label: "Actions",
-                render: (row) => (
-                  <div className="d-flex gap-2">
-                    <button
-                      className="btn btn-sm btn-outline-success"
-                      disabled={loading || row.status !== "AUTHORIZED"}
-                      onClick={() => handlePost(row.transactionId)}
-                    >
-                      Post
-                    </button>
-                    <button
-                      className="btn btn-sm btn-outline-danger"
-                      disabled={loading || !["AUTHORIZED", "POSTED"].includes(row.status)}
-                      onClick={() => handleReverse(row.transactionId)}
-                    >
-                      Reverse
-                    </button>
-                  </div>
-                )
+                render: (row) => {
+                  if (row.status === "POSTED") return <span className="text-success fw-bold small"><i className="bi bi-check-circle me-1"></i>Posted</span>;
+                  if (row.status === "REVERSED") return <span className="text-danger fw-bold small"><i className="bi bi-x-circle me-1"></i>Reversed</span>;
+                  return (
+                    <div className="d-flex gap-2">
+                      <button
+                        className="btn btn-sm btn-outline-success"
+                        disabled={loading || row.status !== "AUTHORIZED"}
+                        onClick={() => handlePost(row.transactionId)}
+                      >
+                        Post
+                      </button>
+                      <button
+                        className="btn btn-sm btn-outline-danger"
+                        disabled={loading || !["AUTHORIZED", "POSTED"].includes(row.status)}
+                        onClick={() => handleReverse(row.transactionId)}
+                      >
+                        Reverse
+                      </button>
+                    </div>
+                  );
+                }
               }
             ]}
             rows={rows}

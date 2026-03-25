@@ -137,7 +137,7 @@ function StatementsListPage() {
               {
                 key: "actions",
                 label: "Actions",
-                render: (row) => (
+                render: (row) => row.status === "CLOSED" ? <span className="text-muted small fw-bold">Closed</span> : (
                   <button
                     className="btn btn-sm btn-outline-danger"
                     disabled={loading || row.status !== "OPEN"}
