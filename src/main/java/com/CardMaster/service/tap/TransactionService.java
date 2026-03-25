@@ -96,11 +96,20 @@ public class TransactionService {
                 .findFirstByAccount_AccountIdAndStatusOrderByGeneratedDateDesc(tx.getAccount().getAccountId(), com.CardMaster.Enum.bsp.StatementStatus.OPEN)
                 .orElse(null);
 
-        if (statement != null) {
-            statement.setTotalDue(statement.getTotalDue() + tx.getAmount());
-            statement.setMinimumDue(statement.getMinimumDue() + (tx.getAmount() * 0.05)); // 5% minimum payment rule
-            statementRepo.save(statement);
+        if (statement == null) {
+            statement = new com.CardMaster.model.bsp.Statement();
+            statement.setAccount(tx.getAccount());
+            statement.setPeriodStart(java.time.LocalDate.now().withDayOfMonth(1));
+            statement.setPeriodEnd(java.time.LocalDate.now().withDayOfMonth(java.time.LocalDate.now().lengthOfMonth()));
+            statement.setGeneratedDate(java.time.LocalDate.now());
+            statement.setTotalDue(0.0);
+            statement.setMinimumDue(0.0);
+            statement.setStatus(com.CardMaster.Enum.bsp.StatementStatus.OPEN);
         }
+
+        statement.setTotalDue(statement.getTotalDue() + tx.getAmount());
+        statement.setMinimumDue(statement.getMinimumDue() + (tx.getAmount() * 0.05)); // 5% minimum payment rule
+        statementRepo.save(statement);
 
         // Convert Entity → DTO manually (beginner-friendly)
        TransactionDto dto =

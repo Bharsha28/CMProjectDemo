@@ -24,8 +24,8 @@ function OperationsDashboardHome() {
 
   const stats = [
     { title: "Cards Issued", value: data.cards.length, icon: "bi-credit-card", accent: "primary" },
-    { title: "Posted Transactions", value: data.transactions.filter((item) => item.status === "Posted").length, icon: "bi-arrow-left-right", accent: "success" },
-    { title: "Open Statements", value: data.statements.filter((item) => item.status === "Open").length, icon: "bi-receipt", accent: "warning" },
+    { title: "Posted Transactions", value: data.transactions.filter((item) => String(item.status).toUpperCase() === "POSTED").length, icon: "bi-arrow-left-right", accent: "success" },
+    { title: "Open Statements", value: data.statements.filter((item) => String(item.status).toUpperCase() === "OPEN").length, icon: "bi-receipt", accent: "warning" },
     { title: "Payments Received", value: data.payments.length, icon: "bi-cash-stack", accent: "info" }
   ];
 
@@ -54,7 +54,7 @@ function OperationsDashboardHome() {
               <DataTable
                 columns={[
                   { key: "customerName", label: "Customer" },
-                  { key: "productName", label: "Product" },
+                  { key: "cardProductName", label: "Product", render: (row) => row.cardProductName || "-" },
                   { key: "maskedCardNumber", label: "Card Number" },
                   { key: "status", label: "Status", type: "status" }
                 ]}

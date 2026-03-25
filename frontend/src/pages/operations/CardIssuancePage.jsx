@@ -143,7 +143,7 @@ function CardIssuancePage() {
           <DataTable
             columns={[
               { key: "customerName", label: "Customer" },
-              { key: "productName", label: "Product" },
+              { key: "cardProductName", label: "Product", render: (row) => row.cardProductName || "-" },
               { key: "expiryDate", label: "Expiry" },
               { key: "status", label: "Status", type: "status" }
             ]}
