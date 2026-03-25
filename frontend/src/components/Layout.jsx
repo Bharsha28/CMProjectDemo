@@ -96,7 +96,7 @@ function Layout({ section, title, children }) {
                     clearSession();
                     saveLogoutMessage(`Goodbye, ${logoutName}. Your session has been closed.`);
                   }
-                  navigate("/login");
+                  navigate("/logout");
                 }}
               >
                 <i className="bi bi-box-arrow-right me-1"></i> Logout

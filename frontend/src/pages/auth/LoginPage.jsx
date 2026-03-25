@@ -160,9 +160,9 @@ function LoginPage() {
                     </button>
                   </div>
                 </div>
-                <div className="auth-status-container" style={{ minHeight: "60px" }}>
-                  {message ? <div className="alert alert-success mt-4 mb-0 text-truncate" title={message}>{message}</div> : null}
-                  {error ? <div className="alert alert-danger mt-4 mb-0 text-truncate" title={error}>{error}</div> : null}
+                <div className="auth-status-container" style={{ minHeight: "60px", display: "flex", alignItems: "center" }}>
+                  {message ? <div className="alert alert-success m-0 w-100 text-truncate" title={message}>{message}</div> : null}
+                  {error ? <div className="alert alert-danger m-0 w-100 text-truncate" title={error}>{error}</div> : null}
                 </div>
 
                 <div className="col-12 d-flex justify-content-end">

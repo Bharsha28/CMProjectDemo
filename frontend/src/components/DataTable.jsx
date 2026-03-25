@@ -4,7 +4,7 @@ function DataTable({ columns, rows, emptyMessage = "No records found." }) {
   return (
     <div className="table-responsive">
       <table className="table align-middle table-hover mb-0">
-        <thead className="table-light">
+        <thead className="bg-white">
           <tr>
             {columns.map((column) => (
               <th key={column.key}>{column.label}</th>
