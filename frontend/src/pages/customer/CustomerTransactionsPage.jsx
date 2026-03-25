@@ -70,42 +70,6 @@ function CustomerTransactionsPage() {
     }
   }
 
-  async function handlePost(transactionId) {
-    setLoading(true);
-    setError("");
-    setMessage("");
-
-    try {
-      const updated = await customerApi.postTransaction(transactionId);
-      setRows((current) =>
-        current.map((row) => (row.transactionId === transactionId ? { ...row, ...updated } : row))
-      );
-      setMessage(`Transaction ${transactionId} posted successfully.`);
-    } catch (submitError) {
-      setError(submitError.message || "Unable to post the transaction.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleReverse(transactionId) {
-    setLoading(true);
-    setError("");
-    setMessage("");
-
-    try {
-      const updated = await customerApi.reverseTransaction(transactionId);
-      setRows((current) =>
-        current.map((row) => (row.transactionId === transactionId ? { ...row, ...updated } : row))
-      );
-      setMessage(`Transaction ${transactionId} reversed successfully.`);
-    } catch (submitError) {
-      setError(submitError.message || "Unable to reverse the transaction.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
     <Layout section="customer" title="My Transactions">
       <PageHeader
@@ -155,29 +119,7 @@ function CustomerTransactionsPage() {
               { key: "amount", label: "Amount", render: (row) => `${row.currency} ${Number(row.amount || 0).toLocaleString()}` },
               { key: "transactionDate", label: "Date" },
               { key: "channel", label: "Channel" },
-              { key: "status", label: "Status", type: "status" },
-              {
-                key: "actions",
-                label: "Simulate Merchant Actions",
-                render: (row) => (
-                  <div className="d-flex gap-2">
-                    <button
-                      className="btn btn-sm btn-outline-success"
-                      disabled={loading || row.status !== "AUTHORIZED"}
-                      onClick={() => handlePost(row.transactionId)}
-                    >
-                      Post
-                    </button>
-                    <button
-                      className="btn btn-sm btn-outline-danger"
-                      disabled={loading || !["AUTHORIZED", "POSTED"].includes(row.status)}
-                      onClick={() => handleReverse(row.transactionId)}
-                    >
-                      Reverse
-                    </button>
-                  </div>
-                )
-              }
+              { key: "status", label: "Status", type: "status" }
             ]}
             rows={rows}
             emptyMessage="No transactions found."
@@ -189,7 +131,7 @@ function CustomerTransactionsPage() {
         <div className="mt-4 p-3 bg-white shadow-sm rounded border-start border-primary border-4">
           <h6 className="fw-bold mb-1">Authorization vs Posting</h6>
           <p className="small text-muted mb-0">
-            'Authorized' transactions are pending and deduct from your available limit. 'Post' them to finalize the transaction into your statement balance.
+            'Authorized' transactions are pending and deduct from your available limit. They will eventually 'Post' to finalize the transaction into your statement balance.
           </p>
         </div>
       )}
